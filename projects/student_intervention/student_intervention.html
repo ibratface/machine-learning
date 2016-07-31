@@ -11784,7 +11784,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong>
-It can be either. If we consider the output to be categorical and discrete - whether a student requires intervention or not, then it can be a classification problem. However, we could also turn this into a regression problem by finding a model that outputs the probability that a student would graduate. In that sense, the output is continuous between 0 and 1. We could prioritize students in our intervention efforts by focusing on students with very low graduation probability.</p>
+It can be either. If we consider the output to be categorical and discrete - whether a student requires intervention or not, then it can be a classification problem. However, we could also turn this into a regression problem by using a model that outputs the probability that a student would graduate. In that sense, the output is continuous between 0 and 1. We could prioritize students in our intervention efforts by focusing on students with very low graduation probability.</p>
 
 </div>
 </div>
@@ -12131,186 +12131,6 @@ Testing set has 95 samples.
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">X_all</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>school_GP</th>
-      <th>school_MS</th>
-      <th>sex_F</th>
-      <th>sex_M</th>
-      <th>age</th>
-      <th>address_R</th>
-      <th>address_U</th>
-      <th>famsize_GT3</th>
-      <th>famsize_LE3</th>
-      <th>Pstatus_A</th>
-      <th>...</th>
-      <th>higher</th>
-      <th>internet</th>
-      <th>romantic</th>
-      <th>famrel</th>
-      <th>freetime</th>
-      <th>goout</th>
-      <th>Dalc</th>
-      <th>Walc</th>
-      <th>health</th>
-      <th>absences</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>18</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>4</td>
-      <td>3</td>
-      <td>4</td>
-      <td>1</td>
-      <td>1</td>
-      <td>3</td>
-      <td>6</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>17</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>5</td>
-      <td>3</td>
-      <td>3</td>
-      <td>1</td>
-      <td>1</td>
-      <td>3</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>15</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
-      <td>4</td>
-      <td>3</td>
-      <td>2</td>
-      <td>2</td>
-      <td>3</td>
-      <td>3</td>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>15</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1</td>
-      <td>3</td>
-      <td>2</td>
-      <td>2</td>
-      <td>1</td>
-      <td>1</td>
-      <td>5</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>16</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>4</td>
-      <td>3</td>
-      <td>2</td>
-      <td>1</td>
-      <td>2</td>
-      <td>5</td>
-      <td>4</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 48 columns</p>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -12318,15 +12138,15 @@ Testing set has 95 samples.
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong></p>
 <p>A. Decision Trees:</p>
-<p>This is a straightforward choice. Our dataset has features that are discrete in nature and we have already set up the data such that many of our categorical features have a binary representation. This is a shoe-in for decision trees due to their inherent structure for splitting data into sets of decreasing entropy. Due to its simplicity, train and predict times are quite low. It's also easy to visualize and explain the resulting model once it has been trained. A downside is that decision trees can easily overfit so some tuning and pruning is necessary.</p>
+<p>This is a straightforward choice. Our dataset has features that are discrete in nature and we have already set up the data such that many of our categorical features have a binary representation. This is a shoe-in for decision trees due to their inherent structure for splitting data into sets of decreasing entropy. Decision trees are simple to construct and run so train and predict times are quite low. It's also easy to visualize and explain the resulting model once it has been trained. A downside is that single decision trees can easily overfit so some tuning and pruning is necessary.</p>
 <p>B. AdaBoost:</p>
-<p>Boosting has been shown to generally do well (<a href="http://www.cs.cornell.edu/~caruana/ctp/ct.papers/caruana.icml06.pdf">http://www.cs.cornell.edu/~caruana/ctp/ct.papers/caruana.icml06.pdf</a>) and can be applied to both classification and regression depending on the underlying model. So long as we pick a simple weak learner, we can overcome the tendency to overfit as the weighted average at the end will smooth out the variance of the individual models. The accuracy of ensembles tend to come at the cost of tranining performance. They're also not easy to visualize and explain.</p>
+<p>Boosting has been shown to generally do well (source: <a href="http://www.cs.cornell.edu/~caruana/ctp/ct.papers/caruana.icml06.pdf">http://www.cs.cornell.edu/~caruana/ctp/ct.papers/caruana.icml06.pdf</a>) and can be applied to both classification and regression depending on the underlying model. So long as we pick a simple weak learner, we can overcome the tendency to overfit as the weighted average at the end will smooth out the variance of the individual models. The accuracy of ensembles tend to come at the cost of training performance. They're not easy to visualize and explain.</p>
 <p>C. Support Vector Machines:</p>
-<p>SVMs are versatile and can be applied to both classification and regression. The kernel trick allows transformations of features into spaces that allow the samples to be linearly separable. The challenge here is finding the appropriate kernel function.</p>
+<p>SVMs are versatile and can be used in both classification and regression. Using different kernels trick allow us to define similarity between two data points. This is equivalent to transforming vectors into feature spaces that allow the points to be linearly separable. The challenge here is finding the appropriate kernel function.</p>
 <p>SVMs are known to work well in high dimensional spaces (our dataset has 48) by narrowing down the relevant features to a few 'support' vectors. The downside is that SVMs can take a while to train but since we have &lt; 1000 samples, that shouldn't be much of a problem.</p>
 <p>D. Why not Naive Bayes and K-Nearest Neighbors:</p>
 <p>Naive Bayes makes the assumption is that each input feature is independent from every other feature. However, we already know that is not true of this dataset, especially since we replaced categorical features with dummy variables.</p>
-<p>K-Nearest Neighbors uses a distance function to determine 'similarity' between two points, thus it tends to work better with numerical data that have some quantitative meaning. Since most of our features are categorical, my intuition is that KNN would be a poor choice.</p>
+<p>K-Nearest Neighbors uses a distance function to determine 'similarity' between two points (similar to SVMs), thus it tends to work better with numerical data that have some quantitative meaning. This is a viable choice, but since we are already using SVM, Decision Trees would be more interesting for comparison.</p>
 
 </div>
 </div>
@@ -12731,7 +12551,7 @@ F1 score for test set: 0.8462.
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong></p>
-<p>At 395 samples our available data is our limiting factor at the moment. Training and prediction time for all models are well under 10 ms. This might change in the future as more samples become available, but right now we can simply concern ourselves with the F1 Score performance. Following this criteria, our SVC model clearly wins out with the best F1 test score. We might still be able to squeeze some more performance with some tuning. Training time is moderate and is likely to scale poorly with additional training data, but unless we expect our student population to suddenly multiply a thousand fold in the next few years, we needn't concern ourselves too much. Moreover, we only likely need to train the model once a year to take updated data into account.</p>
+<p>At 395 samples our available data is the limiting factor at the moment. Training and prediction time for all models are well under 10 ms. This might change in the future as more samples become available, but right now we can simply concern ourselves with model performance. Following this criteria, our SVC model clearly wins out with the best F1 test score. We might still be able to squeeze some more performance with some tuning. Training time is moderate and is likely to scale poorly with additional training data, but unless we expect our student population to suddenly multiply a thousand fold in the next few years, we needn't concern ourselves too much. Moreover, we only likely need to train the model once a year to take updated data into account.</p>
 <p>With regards to the other two models: Our decision tree model, while being the speediest, is clearly overfitting evidenced by training scores and rather poor test scores. We can expect it to approach our Adaboosted Decision Tree ensemble performance with some tuning, but likely not much more. Adaboost has the worst training performance time while not doing much better than SVC, so that's a tradeoff that we'd rather not make at the moment.</p>
 
 </div>
@@ -12753,9 +12573,9 @@ F1 score for test set: 0.8462.
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong>
-At its core, SVC finds the line that can best delineate data points belonging to different categories. Imagine a 2D representation where each data point represents a student with some attributes.  Say it's study time (x-axis) vs absences (y-axis). Red points are students that failed to graduate and the blue ones represents the ones that did. In this purely conceptual graph, having a high number of absences has a detrimental effect on a student's graduation chances, whereas study time not so much.</p>
+At its core, SVC finds the line that can best delineate data points belonging to different categories. Imagine a 2D representation where each data point represents a student with some attributes.  For example, study time (x-axis) vs absences (y-axis). Red points are students that failed to graduate and the blue ones represents the ones that did. In this purely conceptual graph, having a high number of absences has a detrimental effect on a student's graduation chances, whereas study time not so much.</p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Svm_intro.svg/2000px-Svm_intro.svg.png"></p>
-<p>Here we have two lines A and B both cleanly separating failures from successes, but which one is better? Our intuition will lead us to choose A, because it does it 'better'. Technically, it's better because it maximizes the margin between the two categories, allowing the model to be more robust. We can illustrate this by adding a new student with both a high number of absences and study time, it would lie somewhere on the upper right of the graph. If we chose line B, it could misclassify the new data point.</p>
+<p>Here we have two lines A and B both cleanly separating failures from successes, but which one is better? Our intuition will lead us to choose A. Technically, it's better because it maximizes the margin between the two categories, allowing the model to be more robust. We can illustrate this by adding a new student with both a high number of absences and study time, it would lie somewhere on the upper right of the graph. If we chose line B, it could misclassify the new data point. So ysing some math and quadratic programming, SVM calculates this best fit line A.</p>
 
 </div>
 </div>
