@@ -43,6 +43,7 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
+        inputs.pop('right')
         self.state = inputs
         self.state['waypoint'] = self.next_waypoint
 
