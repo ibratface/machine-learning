@@ -2,6 +2,7 @@ import numpy as np
 import math
 from maze import Maze
 import turtle
+import random
 
 delta = [[ 0,  1], # up
          [ 1,  0], # right
@@ -20,13 +21,15 @@ class Robot(object):
         self.map = np.full([maze_dim, maze_dim], 15, dtype=np.int)
         print 'dimensions: ', maze_dim
         self.reset()
+        self.route = []
+        self.route_i = 0
         self.first_run = True
 
         # for drawing
         self.bot = turtle.Turtle()
         self.wally = turtle.Turtle()
 
-    def draw_map(self, x, y):
+    def draw_cell(self, x, y):
         # Intialize the window and drawing turtle.
         self.wally.speed(0)
         self.wally.hideturtle()
@@ -89,31 +92,51 @@ class Robot(object):
     def set_goal(self, x, y):
         self.goal = [(x, y)]
 
+    def update_cell(self, x, y, side):
+        changed = False
+        if x >= 0 and x < len(self.map) and y >=0 and y < len(self.map[0]): # ensure it's within bounds
+            val = self.map[x][y]
+            val &= ~(1 << side)
+            if self.map[x][y] != val:
+                self.map[x][y] = val
+                self.draw_cell(x, y)
+                changed = True
+        return changed
+
     def update_map(self, sensors):
         from collections import deque
         sense = deque(sensors)
         sense.append(0)
         sense.rotate(self.heading - 1)
+        changed = False
+        if not self.heading == 2:
+            changed = self.update_cell(self.location[0], self.location[1]+sense[0], 0) or changed
+            changed = self.update_cell(self.location[0], self.location[1]+sense[0]+1, 2) or changed
+        if not self.heading == 3:
+            changed = self.update_cell(self.location[0]+sense[1], self.location[1], 1) or changed
+            changed = self.update_cell(self.location[0]+sense[1]+1, self.location[1], 3) or changed
+        if not self.heading == 0:
+            changed = self.update_cell(self.location[0], self.location[1]-sense[2], 2) or changed
+            changed = self.update_cell(self.location[0], self.location[1]-sense[2]-1, 0) or changed
+        if not self.heading == 1:
+            changed = self.update_cell(self.location[0]-sense[3], self.location[1], 3) or changed
+            changed = self.update_cell(self.location[0]-sense[3]-1, self.location[1], 1) or changed
         # print sensors
         # print sense
-        if not self.heading == 2:
-            self.map[self.location[0]][self.location[1]+sense[0]] &= ~1
-            self.draw_map(self.location[0], self.location[1]+sense[0])
-        if not self.heading == 3:
-            self.map[self.location[0]+sense[1]][self.location[1]] &= ~2
-            self.draw_map(self.location[0]+sense[1], self.location[1])
-        if not self.heading == 0:
-            self.map[self.location[0]][self.location[1]-sense[2]] &= ~4
-            self.draw_map(self.location[0], self.location[1]-sense[2])
-        if not self.heading == 1:
-            self.map[self.location[0]-sense[3]][self.location[1]] &= ~8
-            self.draw_map(self.location[0]-sense[3], self.location[1])
+        # print self.map
+        # raw_input()
+        return changed
 
     def heuristic(self, x, y):
         '''
         Heuristic function using euclidean distance to the goal
         '''
         return math.sqrt(((self.maze_dim-1)/2-x)**2+((self.maze_dim-1)/2-y)**2)
+
+    def passable(self, c1, c2, heading):
+        passable = ((1 << (heading % 4)) & self.map[c1] > 0) and ((1 << ((heading+2) % 4)) & self.map[c2] > 0)
+        # print "passable???", c1, c2, self.map[c1], self.map[c2], heading, passable
+        return passable
 
     def update_plan(self):
         cost = 1
@@ -122,39 +145,37 @@ class Robot(object):
         closed[self.location[0]][self.location[1]] = 0
         route = []
 
-        while True:
-            if len(opened) == 0:
-                return "Fail"
-            else:
-                opened.sort()
-                f, g, h, x, y  = opened.pop(0)
-                # route.append(h)
-                if (x, y) in self.goal:
-                    step = closed[x][y]
-                    while step != 0:
-                        for i in range(len(delta)):
-                            x2 = x - delta[i][0]
-                            y2 = y - delta[i][1]
-                            if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]):
-                                if  closed[x2][y2] > -1 and closed[x2][y2] == step-1 and 1 << i & self.map[x2][y2] > 0:
+        while len(opened) > 0:
+            opened.sort()
+            f, g, h, x, y  = opened.pop(0)
+            if (x, y) in self.goal:
+                step = closed[x][y]
+                while step != 0:
+                    directions = []
+                    for i in range(len(delta)):
+                        x2 = x - delta[i][0]
+                        y2 = y - delta[i][1]
+                        if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]): # make sure we're not exceeding bounds
+                            if  closed[x2][y2] > -1 and closed[x2][y2] == step-1: # check if our planner went through this cell and if it's cheaper to go through
+                                if self.passable((x2, y2), (x, y), i): # check if we can go in that direction
                                     route.append(i)
                                     step -= 1
                                     x = x2
                                     y = y2
                                     break
-                    route.reverse()
-                    break
-                else:
-                    for i in range(len(delta)):
-                        if 1 << i & self.map[x][y] > 0: # can go in that direction
-                            x2 = x + delta[i][0]
-                            y2 = y + delta[i][1]
-                            if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]): # make sure we're not exceeding bounds
-                                if closed[x2][y2] < 0: # and we haven't covered this location before
-                                    g2 = g + cost
-                                    f2 = g2 + self.heuristic(x2, y2)
-                                    opened.append([f2, g2, i, x2, y2])
-                                    closed[x2][y2] = g2
+                route.reverse()
+                break
+            else:
+                for i in range(len(delta)):
+                    x2 = x + delta[i][0]
+                    y2 = y + delta[i][1]
+                    if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]): # make sure we're not exceeding bounds
+                        if closed[x2][y2] < 0: # and we haven't covered this location before
+                            if self.passable((x, y), (x2, y2), i): # can go in that direction
+                                g2 = g + cost
+                                f2 = g2 + self.heuristic(x2, y2)
+                                opened.append([f2, g2, i, x2, y2])
+                                closed[x2][y2] = g2
         # print closed
         return route
 
@@ -236,28 +257,46 @@ class Robot(object):
         the tester to end the run and return the robot to the start.
         '''
 
-        if tuple(self.location) in self.goal:
-            # if self.first_run:
-            #     self.first_run = False
-            #     self.set_goal(0, 0)
-            # else:
-            self.reset()
-            return 'Reset', 'Reset'
-
-        self.update_map(sensors)
+        changed = self.update_map(sensors)
         self.draw_bot()
-        route = self.update_plan()
-        # print 'location: ', self.location
-        # print 'heading: ', self.heading
-        # print route
+
+        if tuple(self.location) in self.goal:
+            print "Reached goal: ", self.location
+            raw_input()
+            if self.first_run:
+                self.first_run = False
+                self.set_goal(0, 0)
+                self.route = self.update_plan()
+                self.route_i = 0
+            else:
+                self.reset()
+                self.route = self.update_plan()
+                self.route_i = 0
+                return 'Reset', 'Reset'
+
+        if changed:
+            self.route = self.update_plan()
+            self.route_i = 0
+
+        print 'location: ', self.location
+        print 'heading: ', self.heading
+        print self.route
+        print self.route[self.route_i]
+
         rotation = 90
         movement = 0
         for r in [0, 1, -1]:
-            if (self.heading + r + 4) % 4 == route[0]:
+            if (self.heading + r + 4) % 4 == self.route[self.route_i]:
                 rotation = r * 90
-                movement = 1
+                self.route_i += 1
+                movement += 1
+                while self.route_i < len(self.route) and movement < 3 and self.route[self.route_i] == self.route[self.route_i-1]:
+                    self.route_i += 1
+                    movement += 1
                 break
-        # print rotation, movement
+
+        print 'rotation: ', rotation
+        print 'movement: ', movement
         # raw_input("Press Enter to continue...")
         self.move(rotation, movement)
         return rotation, movement
