@@ -1,13 +1,178 @@
 import numpy as np
 import math
-from maze import Maze
 import turtle
 import random
+import sys
 
 delta = [[ 0,  1], # up
          [ 1,  0], # right
          [ 0, -1], # down
          [-1,  0]] # left
+
+class Visualizer(object):
+    def __init__(self, dim):
+        # maze centered on (0,0), squares are 20 units in length.
+        self.sq_size = 20
+        self.origin = dim * self.sq_size / -2
+
+        # for drawing the bot
+        self.bot = turtle.Turtle()
+        self.bot.shape('turtle')
+        self.bot.color('green')
+        self.bot.shapesize(0.3, 0.3, 0.3)
+        self.bot.penup()
+
+        # for drawing the path
+        self.path = turtle.Turtle()
+        self.path.color('red')
+        self.path.speed(0)
+        self.path.hideturtle()
+        self.path.penup()
+
+        # for drawing walls
+        self.wally = turtle.Turtle()
+        self.wally.speed(0)
+        self.wally.hideturtle()
+        self.wally.penup()
+
+    def draw_bot(self, x, y):
+        # draw bot
+        self.bot.goto(self.origin + self.sq_size * x + self.sq_size/2, self.origin + self.sq_size * y + self.sq_size/2)
+
+    def draw_path(self, x, y, path):
+        self.path.penup()
+        self.path.clear()
+        px = self.origin + self.sq_size * x + self.sq_size/2
+        py = self.origin + self.sq_size * y + self.sq_size/2
+        self.path.goto(px, py)
+        self.path.pendown()
+        for p in path:
+            px += delta[p][0]*self.sq_size
+            py += delta[p][1]*self.sq_size
+            self.path.goto(px, py)
+        self.path.penup()
+
+    def draw_cell(self, x, y, v):
+        if not v & 1 > 0:
+            self.wally.goto(self.origin + self.sq_size * x, self.origin + self.sq_size * (y+1))
+            self.wally.setheading(0)
+            self.wally.pendown()
+            self.wally.forward(self.sq_size)
+            self.wally.penup()
+
+        if not v & 2 > 0:
+            self.wally.goto(self.origin + self.sq_size * (x+1), self.origin + self.sq_size * y)
+            self.wally.setheading(90)
+            self.wally.pendown()
+            self.wally.forward(self.sq_size)
+            self.wally.penup()
+
+        if not v & 4 > 0:
+            self.wally.goto(self.origin + self.sq_size * x, self.origin + self.sq_size * y)
+            self.wally.setheading(0)
+            self.wally.pendown()
+            self.wally.forward(self.sq_size)
+            self.wally.penup()
+
+        if not v & 8 > 0:
+            self.wally.goto(self.origin + self.sq_size * x, self.origin + self.sq_size * y)
+            self.wally.setheading(90)
+            self.wally.pendown()
+            self.wally.forward(self.sq_size)
+            self.wally.penup()
+
+    def draw_maze(self, maze):
+        for x in range(len(maze.map)):
+            for y in range(len(maze.map[0])):
+                self.draw_cell(x, y, maze.map[x][y])
+
+class Maze(object):
+    def __init__(self, dim):
+        self.dim = dim
+        self.map = np.full([dim, dim], 15, dtype=np.int)
+
+    @staticmethod
+    def from_file(filename):
+        with open(filename, 'rb') as f_in:
+            # First line should be an integer with the maze dimensions
+            dim = int(f_in.next())
+            maze = Maze(dim)
+            # Subsequent lines describe the permissability of walls
+            walls = []
+            for line in f_in:
+                walls.append(map(int,line.split(',')))
+            maze.map = np.array(walls)
+            return maze
+
+    def shape(self):
+        return self.map.shape
+
+    def bounds(self, x, y):
+        return x >= 0 and x < len(self.map) and y >=0 and y < len(self.map[0])
+
+    def passable(self, x, y, h):
+        return self.bounds(x, y) and self.bounds(x+delta[h][0], y+delta[h][1]) and self.map[x][y] & (1 << h) > 0
+
+    def block_cell(self, x, y, h):
+        '''
+        return True if a change was made
+        '''
+        passable = self.passable(x, y, h)
+        if passable: self.map[x][y] &= ~(1 << h)
+        return passable
+
+class AStarPlanner(object):
+    def __init__(self, maze, start=(0, 0), goal=None, cost=1):
+        self.map = maze
+        self.start = start
+        self.goal = goal
+        self.cost = 1
+        if self.goal == None:
+            center = self.map.dim/2
+            self.goal = [(x, y) for x in [center, center-1] for y in [center, center-1]]
+
+    def heuristic(self, x, y):
+        '''
+        Heuristic function using euclidean distance to the goal
+        '''
+        gx, gy = np.mean(self.goal, axis=0) # goal is usually a room so we just get the center of that room
+        return math.sqrt((gx-x)**2 + (gy-y)**2)
+
+    def plan(self):
+        x, y = self.start
+        opened = [(self.heuristic(x, y), 0, x, y)]
+        closed = np.full(self.map.shape(), -1, dtype=np.int)
+        closed[x][y] = 0
+        route = None
+        while len(opened) > 0:
+            opened.sort()
+            f, g, x, y  = opened.pop(0)
+            if (x, y) in self.goal:
+                route = []
+                step = closed[x][y]
+                while step != 0:
+                    for i in range(len(delta)):
+                        x2 = x - delta[i][0]
+                        y2 = y - delta[i][1]
+                        if self.map.passable(x2, y2, i) and closed[x2][y2] == step-1: # check if our planner went through this cell and if it's cheaper to go through
+                            route.append(i)
+                            step -= 1
+                            x = x2
+                            y = y2
+                            break
+                route.reverse()
+                break
+            else:
+                for i in range(len(delta)):
+                    x2 = x + delta[i][0]
+                    y2 = y + delta[i][1]
+                    if self.map.passable(x, y, i) and closed[x2][y2] < 0: # passable and we haven't covered this location before
+                        g2 = g + self.cost
+                        f2 = g2 + self.heuristic(x2, y2)
+                        opened.append([f2, g2, x2, y2])
+                        closed[x2][y2] = g2
+        # print closed
+        return route
 
 class Robot(object):
     def __init__(self, maze_dim):
@@ -17,223 +182,73 @@ class Robot(object):
         provided based on common information, including the size of the maze
         the robot is placed in.
         '''
-        self.maze_dim = maze_dim
-        self.map = np.full([maze_dim, maze_dim], 15, dtype=np.int)
-        print 'dimensions: ', maze_dim
+        self.maze = Maze(maze_dim)
+        self.viz = Visualizer(maze_dim)
         self.reset()
         self.route = []
         self.route_i = 0
-        self.first_run = True
 
-        # for drawing
-        self.bot = turtle.Turtle()
-        self.wally = turtle.Turtle()
-
-    def draw_cell(self, x, y):
-        # Intialize the window and drawing turtle.
-        self.wally.speed(0)
-        self.wally.hideturtle()
-        self.wally.penup()
-        self.wally.color('black')
-
-        # maze centered on (0,0), squares are 20 units in length.
-        sq_size = 20
-        origin = self.maze_dim * sq_size / -2
-
-        if not self.map[x][y] & 1 > 0:
-            self.wally.goto(origin + sq_size * x, origin + sq_size * (y+1))
-            self.wally.setheading(0)
-            self.wally.pendown()
-            self.wally.forward(sq_size)
-            self.wally.penup()
-
-        if not self.map[x][y] & 2 > 0:
-            self.wally.goto(origin + sq_size * (x+1), origin + sq_size * y)
-            self.wally.setheading(90)
-            self.wally.pendown()
-            self.wally.forward(sq_size)
-            self.wally.penup()
-
-        if not self.map[x][y] & 4 > 0:
-            self.wally.goto(origin + sq_size * x, origin + sq_size * y)
-            self.wally.setheading(0)
-            self.wally.pendown()
-            self.wally.forward(sq_size)
-            self.wally.penup()
-
-        if not self.map[x][y] & 8 > 0:
-            self.wally.goto(origin + sq_size * x, origin + sq_size * y)
-            self.wally.setheading(90)
-            self.wally.pendown()
-            self.wally.forward(sq_size)
-            self.wally.penup()
-
-    def draw_bot(self):
-        # maze centered on (0,0), squares are 20 units in length.
-        sq_size = 20
-        origin = self.maze_dim * sq_size / -2
-
-        # draw turtle bot
-        self.bot.hideturtle()
-        self.bot.penup()
-        self.bot.shape('turtle')
-        self.bot.color('green')
-        self.bot.shapesize(0.3, 0.3, 0.3)
-        self.bot.goto(origin + sq_size * self.location[0] + sq_size/2, origin + sq_size * self.location[1] + sq_size/2)
-        self.bot.showturtle()
-        self.bot.pendown()
+        # meta plan
+        self.runs = 1
+        self.steps = 0
+        self.steps_expected = 0
+        self.flipflop = True
+        self.practice = True
+        self.map_updated = False
+        self.train_time = 0
+        self.test_time = 0
 
     def reset(self):
-        self.location = [0, 0]
+        self.loc = [0, 0]
         self.heading = 0
-        self.goal = [(x, y) for x in [self.maze_dim/2, self.maze_dim/2-1] for y in [self.maze_dim/2, self.maze_dim/2-1]]
-        print 'goal: ', self.goal
+        self.planner = AStarPlanner(self.maze, self.loc)
 
     def set_goal(self, x, y):
         self.goal = [(x, y)]
 
-    def update_cell(self, x, y, side):
-        changed = False
-        if x >= 0 and x < len(self.map) and y >=0 and y < len(self.map[0]): # ensure it's within bounds
-            val = self.map[x][y]
-            val &= ~(1 << side)
-            if self.map[x][y] != val:
-                self.map[x][y] = val
-                self.draw_cell(x, y)
-                changed = True
-        return changed
-
     def update_map(self, sensors):
-        from collections import deque
-        sense = deque(sensors)
-        sense.append(0)
-        sense.rotate(self.heading - 1)
         changed = False
-        if not self.heading == 2:
-            changed = self.update_cell(self.location[0], self.location[1]+sense[0], 0) or changed
-            changed = self.update_cell(self.location[0], self.location[1]+sense[0]+1, 2) or changed
-        if not self.heading == 3:
-            changed = self.update_cell(self.location[0]+sense[1], self.location[1], 1) or changed
-            changed = self.update_cell(self.location[0]+sense[1]+1, self.location[1], 3) or changed
-        if not self.heading == 0:
-            changed = self.update_cell(self.location[0], self.location[1]-sense[2], 2) or changed
-            changed = self.update_cell(self.location[0], self.location[1]-sense[2]-1, 0) or changed
-        if not self.heading == 1:
-            changed = self.update_cell(self.location[0]-sense[3], self.location[1], 3) or changed
-            changed = self.update_cell(self.location[0]-sense[3]-1, self.location[1], 1) or changed
-        # print sensors
-        # print sense
-        # print self.map
-        # raw_input()
+        for i, d in enumerate(sensors):
+            h = (self.heading + i - 1 + 4) % 4
+            # block off detected walls
+            changed = self.maze.block_cell(
+                self.loc[0]+delta[h][0]*sensors[i],
+                self.loc[1]+delta[h][1]*sensors[i],
+                h) or changed
+            # also block off opposite cell
+            changed = self.maze.block_cell(
+                self.loc[0]+delta[h][0]*sensors[i]+delta[h][0],
+                self.loc[1]+delta[h][1]*sensors[i]+delta[h][1],
+                (h+2)%4) or changed
+            if changed:
+                self.viz.draw_cell(
+                    self.loc[0]+delta[h][0]*sensors[i],
+                    self.loc[1]+delta[h][1]*sensors[i],
+                    self.maze.map
+                        [self.loc[0]+delta[h][0]*sensors[i]]
+                        [self.loc[1]+delta[h][1]*sensors[i]])
         return changed
-
-    def heuristic(self, x, y):
-        '''
-        Heuristic function using euclidean distance to the goal
-        '''
-        return math.sqrt(((self.maze_dim-1)/2-x)**2+((self.maze_dim-1)/2-y)**2)
-
-    def passable(self, c1, c2, heading):
-        passable = ((1 << (heading % 4)) & self.map[c1] > 0) and ((1 << ((heading+2) % 4)) & self.map[c2] > 0)
-        # print "passable???", c1, c2, self.map[c1], self.map[c2], heading, passable
-        return passable
 
     def update_plan(self):
-        cost = 1
-        opened = [(self.heuristic(self.location[0], self.location[1]), 0, None, self.location[0], self.location[1])]
-        closed = np.full_like(self.map, -1)
-        closed[self.location[0]][self.location[1]] = 0
-        route = []
-
-        while len(opened) > 0:
-            opened.sort()
-            f, g, h, x, y  = opened.pop(0)
-            if (x, y) in self.goal:
-                step = closed[x][y]
-                while step != 0:
-                    directions = []
-                    for i in range(len(delta)):
-                        x2 = x - delta[i][0]
-                        y2 = y - delta[i][1]
-                        if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]): # make sure we're not exceeding bounds
-                            if  closed[x2][y2] > -1 and closed[x2][y2] == step-1: # check if our planner went through this cell and if it's cheaper to go through
-                                if self.passable((x2, y2), (x, y), i): # check if we can go in that direction
-                                    route.append(i)
-                                    step -= 1
-                                    x = x2
-                                    y = y2
-                                    break
-                route.reverse()
-                break
-            else:
-                for i in range(len(delta)):
-                    x2 = x + delta[i][0]
-                    y2 = y + delta[i][1]
-                    if x2 >= 0 and x2 < len(self.map) and y2 >=0 and y2 < len(self.map[0]): # make sure we're not exceeding bounds
-                        if closed[x2][y2] < 0: # and we haven't covered this location before
-                            if self.passable((x, y), (x2, y2), i): # can go in that direction
-                                g2 = g + cost
-                                f2 = g2 + self.heuristic(x2, y2)
-                                opened.append([f2, g2, i, x2, y2])
-                                closed[x2][y2] = g2
-        # print closed
-        return route
+        self.route = self.planner.plan()
+        self.route_i = 0
+        self.viz.draw_path(self.loc[0], self.loc[1], self.route)
 
     def move(self, rotation, movement):
-        self.heading = (self.heading + rotation/90) % 4
-        self.location[0] += delta[self.heading][0]*movement
-        self.location[1] += delta[self.heading][1]*movement
+        self.heading = (self.heading + rotation + 4) % 4
+        self.loc[0] += delta[self.heading][0]*movement
+        self.loc[1] += delta[self.heading][1]*movement
 
-    def visualize(self):
-        # Intialize the window and drawing turtle.
-        self.wally.speed(0)
-        self.wally.hideturtle()
-        self.wally.penup()
-        self.wally.color('black')
-
-        # maze centered on (0,0), squares are 20 units in length.
-        sq_size = 20
-        origin = self.maze_dim * sq_size / -2
-
-        # iterate through squares one by one to decide where to draw walls
-        for x in range(self.maze_dim):
-            for y in range(self.maze_dim):
-                if not self.map[x][y] & 1 > 0:
-                    self.wally.goto(origin + sq_size * x, origin + sq_size * (y+1))
-                    self.wally.setheading(0)
-                    self.wally.pendown()
-                    self.wally.forward(sq_size)
-                    self.wally.penup()
-
-                if not self.map[x][y] & 2 > 0:
-                    self.wally.goto(origin + sq_size * (x+1), origin + sq_size * y)
-                    self.wally.setheading(90)
-                    self.wally.pendown()
-                    self.wally.forward(sq_size)
-                    self.wally.penup()
-
-                if not self.map[x][y] & 4 > 0:
-                    self.wally.goto(origin + sq_size * x, origin + sq_size * y)
-                    self.wally.setheading(0)
-                    self.wally.pendown()
-                    self.wally.forward(sq_size)
-                    self.wally.penup()
-
-                if not self.map[x][y] & 8 > 0:
-                    self.wally.goto(origin + sq_size * x, origin + sq_size * y)
-                    self.wally.setheading(90)
-                    self.wally.pendown()
-                    self.wally.forward(sq_size)
-                    self.wally.penup()
-
-        self.bot.hideturtle()
-        self.bot.penup()
-        self.bot.shape('turtle')
-        self.bot.color('green')
-        self.bot.shapesize(0.3, 0.3, 0.3)
-        self.bot.goto(origin + sq_size * self.location[0] + sq_size/2, origin + sq_size * self.location[1] + sq_size/2)
-        self.bot.showturtle()
-        self.bot.pendown()
+    def print_stats(self):
+        print "------------------------------------------------------------"
+        print "Reached goal! {}".format(self.loc)
+        print "Run No.: ", self.runs
+        print "Steps Expected: ", self.steps_expected
+        print "Steps Used: ", self.steps
+        print "------------------------------------------------------------"
+        print "Total Train Time: ", self.train_time
+        print "Total Test Time: ", self.test_time
+        raw_input()
 
     def next_move(self, sensors):
         '''
@@ -257,46 +272,88 @@ class Robot(object):
         the tester to end the run and return the robot to the start.
         '''
 
-        changed = self.update_map(sensors)
-        self.draw_bot()
+        # update training and test times
+        if self.practice: self.train_time += 1
+        else: self.test_time += 1
 
-        if tuple(self.location) in self.goal:
-            print "Reached goal: ", self.location
-            raw_input()
-            if self.first_run:
-                self.first_run = False
-                self.set_goal(0, 0)
-                self.route = self.update_plan()
-                self.route_i = 0
+        reset = False
+        # update map based on sensors
+        # update plan if necessary
+        if self.update_map(sensors):
+            self.update_plan()
+            self.map_updated = True
+
+        if self.route == None:
+            # No route to goal
+            raise Exception('No route to goal!')
+        elif self.route_i < len(self.route):
+            # We are still en route
+            pass
+        else:
+            # We've reached the goal
+            # Flip flop between the start location and goal util bot is already
+            # taking the optimal path from start -> goal
+            if self.flipflop:
+                if self.steps * 0.8 <= self.steps_expected:
+                    # Bot is ready for the actual run
+                    self.reset()
+                    reset = True
+                    self.practice = False
+                else:
+                    # make it run back to the start location
+                    self.planner = AStarPlanner(self.maze, self.loc, [(0, 0)])
             else:
-                self.reset()
-                self.route = self.update_plan()
-                self.route_i = 0
-                return 'Reset', 'Reset'
+                # make it do one more trip to the goal
+                self.planner = AStarPlanner(self.maze, self.loc)
+            self.update_plan()
+            self.steps_expected = len(self.route)
+            self.steps = 0
+            self.flipflop = not self.flipflop
+            self.map_updated = False
+            self.runs += 1
 
-        if changed:
-            self.route = self.update_plan()
-            self.route_i = 0
+        # print 'location: ', self.loc
+        # print 'heading: ', self.heading
+        # print 'route: ', self.route
+        # print 'route_i: ', self.route_i
 
-        print 'location: ', self.location
-        print 'heading: ', self.heading
-        print self.route
-        print self.route[self.route_i]
-
-        rotation = 90
-        movement = 0
-        for r in [0, 1, -1]:
-            if (self.heading + r + 4) % 4 == self.route[self.route_i]:
-                rotation = r * 90
+        if reset:
+            rotation = 'Reset'
+            movement = 'Reset'
+        else:
+            # turn right by default. this let's us handle u-turns
+            rotations = [0, 1, -1, -1]
+            movements = [1, 1, 0,  1]
+            h = (self.route[self.route_i] - self.heading + 4) % 4
+            rotation = rotations[h]
+            movement = movements[h]
+            if movement > 0:
                 self.route_i += 1
-                movement += 1
-                while self.route_i < len(self.route) and movement < 3 and self.route[self.route_i] == self.route[self.route_i-1]:
-                    self.route_i += 1
-                    movement += 1
-                break
+                # maximize movement
+                while self.route_i < len(self.route) and \
+                    self.route[self.route_i] == self.route[self.route_i-1] and \
+                    movement < 3:
+                        self.route_i += 1
+                        movement += 1
+                        break
+            self.move(rotation, movement)
+            rotation *= 90
+            self.steps += movement
 
-        print 'rotation: ', rotation
-        print 'movement: ', movement
-        # raw_input("Press Enter to continue...")
-        self.move(rotation, movement)
+        self.viz.draw_bot(self.loc[0], self.loc[1])
+
+        if self.route_i == len(self.route): self.print_stats()
+
+        # print 'rotation: ', rotation
+        # print 'movement: ', movement
         return rotation, movement
+
+if __name__ == '__main__':
+    maze = Maze.from_file(str(sys.argv[1]))
+    planner = AStarPlanner(maze)
+    route = planner.plan()
+    print "Steps Required: ", len(route)
+    viz = Visualizer(maze.dim)
+    viz.draw_maze(maze)
+    viz.draw_path(0, 0, route)
+    raw_input("Press ENTER to exit...")
