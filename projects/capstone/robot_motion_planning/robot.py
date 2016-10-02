@@ -18,16 +18,17 @@ class Visualizer(object):
         # for drawing the bot
         self.bot = turtle.Turtle()
         self.bot.shape('turtle')
-        self.bot.color('green')
-        self.bot.shapesize(0.3, 0.3, 0.3)
+        self.bot.color('red')
+        self.bot.shapesize(0.4, 0.4, 0.4)
         self.bot.penup()
+        self.bot.hideturtle()
 
         # for drawing the path
         self.path = turtle.Turtle()
-        self.path.color('red')
         self.path.speed(0)
-        self.path.hideturtle()
-        self.path.penup()
+        self.path.shape('circle')
+        self.path.color('green')
+        self.path.shapesize(0.2, 0.2, 0.2)
 
         # for drawing walls
         self.wally = turtle.Turtle()
@@ -35,22 +36,24 @@ class Visualizer(object):
         self.wally.hideturtle()
         self.wally.penup()
 
-    def draw_bot(self, x, y):
+    def draw_bot(self, x, y, h):
         # draw bot
+        self.bot.showturtle()
         self.bot.goto(self.origin + self.sq_size * x + self.sq_size/2, self.origin + self.sq_size * y + self.sq_size/2)
 
     def draw_path(self, x, y, path):
-        self.path.penup()
         self.path.clear()
         px = self.origin + self.sq_size * x + self.sq_size/2
         py = self.origin + self.sq_size * y + self.sq_size/2
+        self.path.penup()
         self.path.goto(px, py)
+        self.path.stamp()
         self.path.pendown()
         for p in path:
             px += delta[p][0]*self.sq_size
             py += delta[p][1]*self.sq_size
             self.path.goto(px, py)
-        self.path.penup()
+            self.path.stamp()
 
     def draw_cell(self, x, y, v):
         if not v & 1 > 0:
@@ -139,6 +142,9 @@ class AStarPlanner(object):
         return math.sqrt((gx-x)**2 + (gy-y)**2)
 
     def plan(self):
+        '''
+        Do A* search. Return an optimal route.
+        '''
         x, y = self.start
         opened = [(self.heuristic(x, y), 0, x, y)]
         closed = np.full(self.map.shape(), -1, dtype=np.int)
@@ -148,30 +154,37 @@ class AStarPlanner(object):
             opened.sort()
             f, g, x, y  = opened.pop(0)
             if (x, y) in self.goal:
+                # We've found the goal. Backtrace a route to the starting location
                 route = []
                 step = closed[x][y]
+                i = 0
                 while step != 0:
-                    for i in range(len(delta)):
+                    while True:
                         x2 = x - delta[i][0]
                         y2 = y - delta[i][1]
-                        if self.map.passable(x2, y2, i) and closed[x2][y2] == step-1: # check if our planner went through this cell and if it's cheaper to go through
+                        if self.map.passable(x2, y2, i) and closed[x2][y2] == step-1:
+                            # check if our planner went through this cell and if it was the previous step
                             route.append(i)
                             step -= 1
                             x = x2
                             y = y2
                             break
+                        else:
+                            i = (i + 1) % 4
                 route.reverse()
                 break
             else:
                 for i in range(len(delta)):
                     x2 = x + delta[i][0]
                     y2 = y + delta[i][1]
-                    if self.map.passable(x, y, i) and closed[x2][y2] < 0: # passable and we haven't covered this location before
+                    if self.map.passable(x, y, i) and closed[x2][y2] < 0:
+                        # passable and we haven't covered this location before
                         g2 = g + self.cost
                         f2 = g2 + self.heuristic(x2, y2)
                         opened.append([f2, g2, x2, y2])
                         closed[x2][y2] = g2
         # print closed
+        self.closed = closed
         return route
 
 class Robot(object):
@@ -189,12 +202,14 @@ class Robot(object):
         self.route_i = 0
 
         # meta plan
-        self.runs = 1
-        self.steps = 0
-        self.steps_expected = 0
         self.flipflop = True
         self.practice = True
-        self.map_updated = False
+
+        # stats
+        self.trips = 1
+        self.steps = 0
+        self.steps_expected = 0
+        self.turns = 0
         self.train_time = 0
         self.test_time = 0
 
@@ -202,9 +217,6 @@ class Robot(object):
         self.loc = [0, 0]
         self.heading = 0
         self.planner = AStarPlanner(self.maze, self.loc)
-
-    def set_goal(self, x, y):
-        self.goal = [(x, y)]
 
     def update_map(self, sensors):
         changed = False
@@ -242,46 +254,28 @@ class Robot(object):
     def print_stats(self):
         print "------------------------------------------------------------"
         print "Reached goal! {}".format(self.loc)
-        print "Run No.: ", self.runs
+        print "Trip No.: ", self.trips
         print "Steps Expected: ", self.steps_expected
         print "Steps Used: ", self.steps
+        print "Turns Used: ", self.turns
         print "------------------------------------------------------------"
         print "Total Train Time: ", self.train_time
         print "Total Test Time: ", self.test_time
-        raw_input()
+        raw_input("Press ENTER to continue...")
 
     def next_move(self, sensors):
-        '''
-        Use this function to determine the next move the robot should make,
-        based on the input from the sensors after its previous move. Sensor
-        inputs are a list of three distances from the robot's left, front, and
-        right-facing sensors, in that order.
-
-        Outputs should be a tuple of two values. The first value indicates
-        robot rotation (if any), as a number: 0 for no rotation, +90 for a
-        90-degree rotation clockwise, and -90 for a 90-degree rotation
-        counterclockwise. Other values will result in no rotation. The second
-        value indicates robot movement, and the robot will attempt to move the
-        number of indicated squares: a positive number indicates forwards
-        movement, while a negative number indicates backwards movement. The
-        robot may move a maximum of three units per turn. Any excess movement
-        is ignored.
-
-        If the robot wants to end a run (e.g. during the first training run in
-        the maze) then returing the tuple ('Reset', 'Reset') will indicate to
-        the tester to end the run and return the robot to the start.
-        '''
-
         # update training and test times
         if self.practice: self.train_time += 1
         else: self.test_time += 1
 
+        # update turns used
+        self.turns += 1
+
         reset = False
         # update map based on sensors
         # update plan if necessary
-        if self.update_map(sensors):
+        if self.update_map(sensors): # returns true if map changed
             self.update_plan()
-            self.map_updated = True
 
         if self.route == None:
             # No route to goal
@@ -291,26 +285,27 @@ class Robot(object):
             pass
         else:
             # We've reached the goal
-            # Flip flop between the start location and goal util bot is already
+            if self.steps <= self.steps_expected:
+                # Bot is ready for the actual run
+                self.reset()
+                reset = True
+                self.practice = False
+                self.flipflop = True
+            # Flip flop between the start location and goal until bot is already
             # taking the optimal path from start -> goal
-            if self.flipflop:
-                if self.steps * 0.8 <= self.steps_expected:
-                    # Bot is ready for the actual run
-                    self.reset()
-                    reset = True
-                    self.practice = False
-                else:
-                    # make it run back to the start location
-                    self.planner = AStarPlanner(self.maze, self.loc, [(0, 0)])
+            elif self.flipflop:
+                # make it run back to the start location
+                self.planner = AStarPlanner(self.maze, self.loc, [(0, 0)])
+                self.flipflop = not self.flipflop
             else:
                 # make it do one more trip to the goal
                 self.planner = AStarPlanner(self.maze, self.loc)
+                self.flipflop = not self.flipflop
             self.update_plan()
             self.steps_expected = len(self.route)
             self.steps = 0
-            self.flipflop = not self.flipflop
-            self.map_updated = False
-            self.runs += 1
+            self.turns = 0
+            self.trips += 1
 
         # print 'location: ', self.loc
         # print 'heading: ', self.heading
@@ -321,7 +316,7 @@ class Robot(object):
             rotation = 'Reset'
             movement = 'Reset'
         else:
-            # turn right by default. this let's us handle u-turns
+            # turn right by default when a u-turn is needed
             rotations = [0, 1, -1, -1]
             movements = [1, 1, 0,  1]
             h = (self.route[self.route_i] - self.heading + 4) % 4
@@ -329,29 +324,32 @@ class Robot(object):
             movement = movements[h]
             if movement > 0:
                 self.route_i += 1
-                # maximize movement
+                # maximize movement. use up to 3 steps
                 while self.route_i < len(self.route) and \
                     self.route[self.route_i] == self.route[self.route_i-1] and \
                     movement < 3:
                         self.route_i += 1
                         movement += 1
-                        break
             self.move(rotation, movement)
             rotation *= 90
             self.steps += movement
 
-        self.viz.draw_bot(self.loc[0], self.loc[1])
+        self.viz.draw_bot(self.loc[0], self.loc[1], self.heading)
 
         if self.route_i == len(self.route): self.print_stats()
 
-        # print 'rotation: ', rotation
-        # print 'movement: ', movement
+        # print 'rotation: ', rotation, ' movement: ', movement
         return rotation, movement
 
 if __name__ == '__main__':
     maze = Maze.from_file(str(sys.argv[1]))
+    print maze.map
     planner = AStarPlanner(maze)
     route = planner.plan()
+    print "Value Map: "
+    print planner.closed
+    print "Shortest Route: "
+    print route
     print "Steps Required: ", len(route)
     viz = Visualizer(maze.dim)
     viz.draw_maze(maze)
