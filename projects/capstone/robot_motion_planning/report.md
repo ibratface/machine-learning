@@ -4,7 +4,6 @@ Terence So
 October 02, 2016
 
 ## I. Definition
-_(approx. 1-2 pages)_
 
 ### Project Overview
 
@@ -31,7 +30,6 @@ In this project, our main performance metric is already provided – a score whi
 We shall also be using supplementary metrics to further evaluate our robot's performance – the number of steps of the chosen path and the number of turns used. Note the difference between a step and a turn: a move from one cell to an adjacent cell is considered one step; a turn can consist of a maximum of 3 steps.
 
 ## II. Analysis
-_(approx. 2-4 pages)_
 
 ### Data Exploration and Visualization
 
@@ -72,19 +70,17 @@ Shortest Path Length: 49
 
 ### Algorithms and Techniques
 
-#### Finding a Path
+#### Finding the Goal Room
 
-It is apparent from our data analysis that once we have the full map of the maze, it is relatively straightforward to find a path to the goal. In fact, we can do it manually by inspection and some trial and error. Algorithmically, we know of two ways to do path planning: node expansion search and the more efficient A\* search algorithm. A\* search is similar to node expansion but uses a heuristic to prioritize nodes that are closer to the goal. For this project, we shall use A\*. With this we solve half of our problem.
+It is apparent from our data analysis that once we have the full map of the maze, it is relatively straightforward to find a path to the goal. In fact, we can do it manually by inspection and some trial and error. Algorithmically, there are several ways to do [path finding](https://en.wikipedia.org/wiki/Pathfinding): Dijkstra's, Sample and A\* search. All these algorithms achieve the same thing and are actually not very different procedurally. All these algorithms explore a tree-like structure, visiting each node until the shortest path is found.  The main difference is efficiency. In this sense, A\* tends to do better since it uses a heuristic to explore nodes that are closer to the goal first. For this project, we shall use A\*. This solves the first half of our problem.
 
-The other half is that we do not have a map of the maze at the start of the first run. The good news is that we can build this map piecemeal from the data coming in from the robot sensors. We can first assume a maze that has no walls save for its outer perimeter and place walls as we detect them. Combining this with A\*, we find that it solves our problem quite nicely.
+The other half is that we do not have a map of the maze at the start of the first run. The good news is that we can build this map piecemeal from the data coming in from the robot sensors. We can first assume a maze that has no walls save for its outer perimeter and place walls as we detect them. Combining this with A\*, we find that it solves our problem rather neatly.
 
-We can imagine the behavior of our robot with A\* when first placed in the starting location. The maze being empty in its memory, its first route will be to simply head straight north and then right towards the goal. However, things don't go according to plan. In every turn, its sensors will pick up walls and obstacles along its route. The robot will have to come up with a new route each time the map is updated. However, the nice thing about A\* is that robot will always try to move towards the center. We are certain that eventually it will find an opening that will take it to the goal room.
+We can imagine the behavior of our robot with A\* when first placed in the starting location. The maze will start out void of walls, its first route will be to simply head straight north and then right towards the goal. However, things don't go according to plan. Every turn, its sensors will pick up new walls and obstacles along its route. The robot will have to come up with a new route each time the map is updated. Eventually though, it will find an opening that will take it to the goal room. The nice thing about A\* is that robot will always try to move towards the center.
 
 #### Finding the Shortest Path
 
-Now that we can find our way to the goal room, our next concern is to do it in the shortest time possible. We recall that our robot plans optimistically. We can make this work in our favor by making the robot take multiple trips from the starting location to the goal room. When the robot first reaches the goal, the path it took to get there is likely not the shortest. However, the robot will have revealed walls and updated its map accordingly. If we make the robot run back to the start location it will mostly likely choose a different path back – one that runs through unexplored areas of the map since it thinks it will have fewer obstacles.
-
-We can make the robot take back and forth trips until it longer improves its run time, something akin to early stopping. Now certainly, we want to do all this during the first run, as the  turn penalty is much lower and go for the second run when we are ready. This is not very different from training and testing a machine learning model.
+Now that we can find our way to the goal room, our next concern is to do it in the shortest time possible. We recall that our robot plans optimistically and we can make this work in our favor. When the robot first reaches the goal, the path it took to get there is likely not the shortest. However, the robot will have revealed walls and updated its map accordingly. If we make the robot run back to the start location it will mostly likely choose a different path back – one that runs through unexplored areas of the map since it thinks it will have fewer obstacles that way. By making the robot take multiple trips from the starting location to the goal room, more and more of the map will be revealed as long as the robot thinks that there are possible shorter routes worth exploring. Eventually, the robot will settle on the same route - *this* is our shortest path.
 
 #### Robot Movement
 
@@ -94,11 +90,7 @@ There is also the matter of maximizing the use of turns in each time step. The r
 
 ### Benchmark
 
-We shall use two benchmarks to set the upper and lower bounds of robot performance.
-
-#### Robot Performance – Best Case
-
-In the best case, the robot takes the shortest path using max three(3) steps per turn in both runs. While it is unrealistic to expect to achieve this performance, it will be useful for comparison.
+In the ideal case, the robot takes the shortest path using max three(3) steps per turn in both runs. The scores in this case are as follows:
 
 | | Maze 01 |Maze 02 | Maze 03 |
 | - | :-: | :-: | :-: |
@@ -107,19 +99,9 @@ In the best case, the robot takes the shortest path using max three(3) steps per
 | Turns | 17 | 28 | 29 |
 | Score | 17.567 | 28.934 | 29.967 |
 
-#### Robot Performance – Worst Case
-
-In the worst possible case, the robot runs aimlessly around the maze never reaching the goal, but this is not a useful metric. For our purposes, we shall define the worst case as the robot visiting every other cell prior to stepping in the goal room all taking one step per turn. For a 12x12 maze, this is 140 (12x12-4 = 140) turns per run. At the end of two(2) runs, the robot will achieve a score of 144.667.
-
-| | Maze 01 | Maze 02 | Maze 03 |
-| - | :-: | :-: | :-: |
-| Size | 12x12 | 14x14 | 16x16 |
-| Path Length | 140 | 196 | 256 |
-| Turns | 140 | 196 | 256 |
-| Score | 144.667 | 202.534 | 264.534 |
+While it is unrealistic to expect that we can achieve these scores, it is reasonable to expect to at least be able to find the shortest path. Additionally, the robot should be able to maximize movement and use the minimum amount of turns following the said path. This shall be our minimum baseline performance.
 
 ## III. Methodology
-_(approx. 3-5 pages)_
 
 ### Data Preprocessing
 
@@ -307,14 +289,13 @@ else:
     self.steps_expected = len(self.route)
 ```
 
-Every trip the robot takes (start to goal or vice versa), the robot plots a course that seems better than the last one it took and records its expected number of steps to get to the goal. If the number of steps used exceed the expectation, it means obstacles were encountered and the robot was forced to reroute. If it does not, it means it has found the shortest path and the robot ceases the exploration run. No hyper-parameters are necessary.
+Every trip the robot takes (start to goal or vice versa), the robot plots a course that seems shortest and records its expected number of steps to get to the goal. If the number of steps used exceed the expectation, it means obstacles were encountered and the robot was forced to reroute. If it does not, it means it has found the shortest path and the robot ceases the exploration run. No hyper-parameters are necessary.
 
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
 
-The results are good. In every run, the robot successfully finds the goal room. In addition, the robot successfully determines the shortest path on the 5th training trip. The following detailed statistics were gathered from each trip of the robot.
+The following detailed statistics were gathered from each trip of the robot.
 
 #### Test Maze 01
 
@@ -340,11 +321,7 @@ The results are good. In every run, the robot successfully finds the goal room. 
 | Steps Used     | 91 | 77 | 63 | 51 | 49 | 49 |
 | Turns Used     | 76 | 63 | 39 | 30 | 30 | 29 |
 
-Another observation is that steps expected gets progressively worse every trip while steps used gets progressively better. This is rather similar to a validation curve where the cross validation score approaches the training score.
-
 #### Results Summary
-
-The following table summarizes our results.
 
 | Maze | 01 | 02 | 03 |
 |-|-:|-:|-:|
@@ -354,38 +331,23 @@ The following table summarizes our results.
 | Test Turns | 17 | 27 | 29 |
 | Score |22.100 | 34.367 | 37.100 |
 
+The results are good. In every run, the robot successfully finds the goal room. In addition, the robot successfully determines the shortest path on the 5th training trip. Another observation is that steps expected gets progressively worse every trip while steps used gets progressively better. This is a sign that the robot is adjusting its expectations based on new data.
+
 ### Justification
 
-The following tables show our results against our benchmarks.
+The following table shows our results against our benchmarks.
 
-#### Test Maze 01
+| __Maze__ | __01__ | __01__ | __02__ | __02__ | __03__ | __03__ |
+|-|-:|-:|-:|-:|-:|-:|
+| | __Actual__ | __Benchmark__ | __Actual__ | __Benchmark__ | __Actual__ | __Benchmark__ |
+| Path Length | 30 | 30 | 43 | 43 | 49 | 49 |
+| Train Turns | 153 | 17 | 221 | 28 | 243 | 29 |
+| Test Turns | 17 | 17 | 27 | 28 | 29 | 29 |
+| Score | 22.100 | 17.567 | 34.367 | 28.934 | 37.100 | 29.967 |
 
-| Maze | Actual | Best | Worst |
-|-|-:|-:|-:|
-| Path Length | 30 | 30 | 140 |
-| Test Turns | 17 | 17 | 140 |
-| Score | 22.100 | 17.567 | 144.667 |
-
-#### Test Maze 02
-
-| Maze | Actual | Best | Worst |
-|-|-:|-:|-:|
-| Path Length | 43 | 43 | 196 |
-| Test Turns | 27 | 28 | 196 |
-| Score | 34.367 | 28.934 | 202.534 |
-
-#### Test Maze 03
-
-| Maze | Actual | Best | Worst |
-|-|-:|-:|-:|
-| Path Length | 49 | 49 | 256 |
-| Test Turns | 29 | 29 | 256 |
-| Score | 37.100 | 29.967 | 264.534 |
-
-We see that our results are very close or equal to our ideal benchmark. In all cases, our robot was able to find the shortest path and use the least amount of turns using the said path. This is a  sign that our implementation is working well. There is a difference in score however, and this is caused by the number of turns used to explore the maze in the first run.
+We see that our results are very close or equal to our ideal benchmark. We also verify that we have achieved our baseline performance which is to find the shortest path and use minimal turns in the test run. There is a difference in score however, and this is caused by the number of turns used to explore the maze in the first run.
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
 
 ### Free-Form Visualization
 In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
@@ -394,26 +356,22 @@ In this section, you will need to provide some form of visualization that emphas
 - _If a plot is provided, are the axes, title, and datum clearly defined?_
 
 ### Reflection
-In this section, you will summarize the entire end-to-end problem solution and discuss one or two particular aspects of the project you found interesting or difficult. You are expected to reflect on the project as a whole to show that you have a firm understanding of the entire process employed in your work. Questions to ask yourself when writing this section:
-- _Have you thoroughly summarized the entire process you used for this project?_
-- _Were there any interesting aspects of the project?_
-- _Were there any difficult aspects of the project?_
-- _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
+
+I did this coming fresh from the Artificial Intelligence for Robotics course so I already had general idea of how to get the robot to the goal room. Getting the robot to perform well was another story and I didn't have a solution for that in the onset. I figured the best way to find out was to learn by doing, so I set out building a prototype with a few guidelines:
+
+* build a map from sensor data
+* use A\* for path finding
+* move one step at a time and no reverse
+* and most importantly, DON'T hit any walls
+
+Once I was consistently getting the robot to the goal room and finishing the course without any mishaps, it was time to look at the scores and performance. During one of my tests, I observed something curious - sometimes the robot will do worse on the second run. At this point, the robot was only programmed to get to the goal room, reset, and get to the goal room again. With the help of some visualization, I discovered that the robot was always taking a different path in the second run. It was in fact trying to find a better route all by itself. This was how the back and forth trips from start to goal came to be.
+
+After some refactoring, the only remaining bit of optimization needed was making the robot take multiple steps per turn. This was easily accomplished by counting route steps that were in the same direction.
+
+One final thing - there was this perplexing bug where the robot would get stuck moving back and forth between the same two positions, and it took me a while to solve it. At times the planner would produce these 'mirror' routes - the first move from one position would lead to the other position, and vice versa. This can happen if the planner is run every time step. The solution was to only update the route when the map was updated, forcing the robot to 'follow through' with the original route.
 
 ### Improvement
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
 
------------
+Thinking within the confines of this simulation, the first change I would make is slap a fourth sensor facing the back of the robot. This would allow us to go in reverse without a lot more code and shave off some more points during exploration. Also something I considered and experimented on briefly is something akin to early stopping. From the results, the route used in last training run is the same one used in the test run, so it's actually superfluous. We could stop at the 4th run and save some points. One way to do this is to add an error margin - say 10%, to the training stop condition. This actually worked lowering a point on Maze 02 and 03, but seems too unreliable to include without testing on more mazes. Finally, there's the possibility of using expected turns to evaluate paths instead of steps.
 
-**Before submitting, ask yourself. . .**
-
-- Does the project report you’ve written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Analysis** and **Methodology**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your analysis, methods, and results?
-- Have you properly proof-read your project report to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
-- Is the code that implements your solution easily readable and properly commented?
-- Does the code execute without error and produce results similar to those reported?
+If we were to work with an actual robotic mouse, adapting our implementation would depend on how reliable the hardware is. Micromouse competitions are very specific regarding wall and grid specifications. If the motor controller can guarantee movement accuracy and if a lower layer filter can give us clean sensor data, then we can pretty much use the same code for high level path planning. Basically, we abstract away the non-idealities. If that is not possible, then we may have to expand the grid size and consider that the robot and walls can occupy several cells. Collision detection will be a bit different but A\* can still work in this case, albeit with a larger grid.
