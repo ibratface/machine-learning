@@ -36,22 +36,43 @@ Each turn the robot is allowed to turn left or right but not a full u-turn. It i
 Naturally, the robot cannot move through walls. If it attempts to do so, it will remain in the last valid position no feedback is provided to the robot.
 
 #### The Mazes
+
+##### Maze Characteristics
+
 There are three(3) test mazes provided. Each maze is an NxN grid where N is even from 12 to 16. Each maze's outer perimeter is completely bounded. The goal room is always a 2x2 grid in the center of the maze. There is always at least one(1) path from the starting location to the goal room. It is also worth noting that there is always a right wall at the starting location and the robot has no choice but to move forward during its first turn.
+
+##### Data Representation
+
+Each test maze is stored in a separate text file:
+
+* [test_maze_01.txt](test_maze_01.txt)
+* [test_maze_02.txt](test_maze_01.txt)
+* [test_maze_03.txt](test_maze_01.txt)
+
+The first line of each file describes the maze dimensions. The next lines are comma delimited numbers that describe a column of the maze. Each number is a 4-bit representation of a cell's walls. Each bit represents the presence of a cell wall: 0 if closed and 1 if open. This is best illustrated in figure below:
+
+![](cell_walls.png)
+
+It is important to note that the outer perimeter of the maze must be walled. In addition, adjacent cells need to be consistent. For example, if a cell's top side is closed, then the cell above it must have its bottom side closed as well. A portion of a maze is illustrated below:
+
+![](maze_example.png)
+
+##### Maze Visualizations
 
 The following are diagrams of the test mazes. The shortest path is traced in each maze. There are actually multiple shortest paths with equal length, only one is shown for clarity.
 
-##### Test Maze 01
+###### Test Maze 01
 Size: 12x12<br>Shortest Path Length: 30
 
 ![](test_maze_01.png)
 <div style="page-break-after: always;"></div>
 
-##### Test Maze 02
+###### Test Maze 02
 Size: 14x14<br>Shortest Path Length: 43
 
 ![](test_maze_02.png)
 
-##### Test Maze 03
+###### Test Maze 03
 Size: 16x16<br>Shortest Path Length: 49
 
 ![](test_maze_03.png)
@@ -64,24 +85,54 @@ The other half is that we do not have a map of the maze at the start of the firs
 
 We can imagine the behavior of our robot with A* when first placed in the starting location. The maze will start out void of walls, its first route will be to simply head straight north and then right towards the goal. However, things don't go according to plan. Every turn, its sensors will pick up new walls and obstacles along its route. The robot will have to come up with a new route each time the map is updated. Eventually though, it will find an opening that will take it to the goal room. The nice thing about A* is that robot will always try to move towards the center.
 
+#### A*\ Search Algorithm
+
+A brief discussion on the [A\* Search Algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) is given here for completeness. The first part of A\* is determining the cost of each position in the maze relative to the starting position. The maze can be thought of as a directed graph with the root node being the robot starting position and reachable adjacent cells as child nodes. Starting from the root node, we expand into adjacent nodes adding the cost of one step to each node. We do this recursively, expanding nodes with lower cost first until we reach the goal. Since we always favor expanding nodes with lower cost, we are ensured that we have the lowest possible path cost when we reach the goal.
+
+As mentioned, the main difference of A\* is the use of a heuristic to determine which nodes to expand first. When prioritizing nodes to expand, instead of only using the cost of the path to a node it will add a heuristic cost (an estimate of the cost of the cheapest path from the node to the goal). This has the potential to minimize the number of iterations if the goal is reached earlier. In this case, our heuristic is simply the Euclidean distance of a position to the goal.
+
+A completed cost map for Test Maze 01 looks like the following:
+
+```python
+[[ 0  1  2  3  4  5  6  7  8  9 10 11]
+ [ 5  4  3  8  9  8  7  8  9 10 11 12]
+ [ 6  7  4  7 10  9  8  9 14 13 12 13]
+ [ 7  6  5  6 11 10 11 10 15 16 17 18]
+ [ 8  9 10 13 12 13 14 15 16 17 18 19]
+ [13 12 11 12 13 -1 -1 16 17 18 19 20]
+ [14 13 12 13 14 -1 30 17 18 19 20 21]
+ [15 14 15 14 27 28 29 28 19 20 23 22]
+ [16 17 26 25 26 27 28 27 26 21 22 23]
+ [17 18 19 24 27 28 27 26 25 24 23 24]
+ [18 19 20 23 24 -1 -1 -1 26 25 24 25]
+ [19 20 21 22 23 24 25 26 -1 -1 -1 -1]]
+```
+
+The second part of A\* begins when the algorithm reaches the goal position. From the goal positioni, we trace a path back to the starting position by based on the completed cost map. In the above example, we begin at the center with value 30 to 29 to 28 and so forth. Note that there are multiple paths and any of these paths will be equal in length.
+
 #### Finding the Shortest Path
 Now that we can find our way to the goal room, our next concern is to do it in the shortest time possible. We recall that our robot plans optimistically and we can make this work in our favor. When the robot first reaches the goal, the path it took to get there is likely not the shortest. However, the robot will have revealed walls and updated its map accordingly. If we make the robot run back to the start location it will mostly likely choose a different path back – one that runs through unexplored areas of the map since it thinks it will have fewer obstacles that way. By making the robot take multiple trips from the starting location to the goal room, more and more of the map will be revealed as long as the robot thinks that there are possible shorter routes worth exploring. Eventually, the robot will settle on the same route - _this_ is our shortest path.
+
+Here is the robot trying another path after reaching the goal:
+
+![](shortest_path.png)
 
 #### Robot Movement
 It is important to mention that running into a wall is an extremely undesirable case. While feedback is provided to the UI, it is not provided to the robot. The robot is only given the starting position and sensor information. There is no other way to determine its position in the maze aside from tracking its own moves. If the robot hits a wall, it will fail to localize from then on. Assuming that our charting is accurate and we never instruct the robot to go past obstacles, this should never happen.
 
-There is also the matter of maximizing the use of turns in each time step. The robot can move a maximum of three(3) steps in one direction each turn. We can take advantage of this if our A* route  has three(3) or more consecutive steps in the same direction.
+There is also the matter of maximizing the use of turns in each time step. The robot can move a maximum of three(3) steps in one direction each turn. We can take advantage of this if our A* route  has three(3) or more consecutive steps in the same direction. For example, a route: `[North, North, North, East, East]` can be compressed into 2 turns by going north - move 3, east - move 2.
+
 <div style="page-break-after: always;"></div>
 
 ### Benchmark
 In the ideal case, the robot takes the shortest path using max three(3) steps per turn in both runs. The scores in this case are as follows:
 
-            | Maze 01 | Maze 02 | Maze 03
------------ | :-----: | :-----: | :-----:
-Size        | 12x12   | 14x14   | 16x16
-Path Length | 30      | 43      | 49
-Turns       | 17      | 28      | 29
-Score       | 17.567  | 28.934  | 29.967
+|             | Maze 01 | Maze 02 | Maze 03 |
+|------------ | :-----: | :-----: | :-----: |
+| Size        | 12x12   | 14x14   | 16x16   |
+| Path Length | 30      | 43      | 49      |
+| Turns       | 17      | 28      | 29      |
+| Score       | 17.567  | 28.934  | 29.967  |
 
 While it is unrealistic to expect that we can achieve these scores, it is reasonable to expect to at least be able to find the shortest path. Additionally, the robot should be able to maximize movement and use the minimum amount of turns following the said path. This shall be our minimum baseline performance.
 
@@ -110,13 +161,7 @@ delta = [[ 0,  1], # up
 ```
 
 #### Maze Class
-The Maze class is an encapsulation of the structure of a maze. Internally, it is backed using a 2-D numpy int array. Each element in the array represents a cell. The first dimension is the horizontal x-axis. The second dimension represents the vertical y-axis. The 4-bits of each element indicates whether a wall exists on each side of the cell. If a wall exists, the bit is 0. Otherwise, it is 1. This representation is consistent with the provided test mazes.
-
-Orientation | N | E | S | W
------------ | - | - | - |
-bit         | 0 | 1 | 2 | 3
-
-A fully loaded Test Maze 01 looks like the following figure. At [0, 0] the value is 1, which means only the north side is open.
+The Maze class is an encapsulation of the structure of a maze. Internally, it is backed using a 2-D numpy int array. Each element in the array represents a cell. The first dimension is the horizontal x-axis. The second dimension represents the vertical y-axis. The 4-bits of each element indicates whether a wall exists on each side of the cell. If a wall exists, the bit is 0. Otherwise, it is 1. This representation is consistent with the provided test mazes (see Analysis section for details). A numpy array loaded with Test Maze 01 looks like the following figure.
 
 ```python
 [[ 1  5  7  5  5  5  7  5  7  5  5  6]
