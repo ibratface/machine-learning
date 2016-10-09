@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>report.html</title>
+<style>
+* {
+    overflow: visible !important;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    box-decoration-break: clone;
+}
+
+html, body {
+    background: #FFF;
+    font-family: "Segoe UI", Arial, freesans, sans-serif;
+    font-size: 10px;
+    line-height: 1.4;
+    color: #333;
+    word-wrap: break-word;
+	hyphens: auto;
+}
+
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 4px solid #EEE;
+}
+
+code {
+    padding: .1em .4em;
+    display: inline-block;
+    background-color: #f9f2f4;
+    color: #c7254e;
+    border-radius: 3px;
+    border: 0 none;
+    font: 9px Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
+    hyphens: manual;
+}
+
+pre code {
+    padding: 15px;
+    display: block;
+    background-color: #F9F9F9;
+    color: #555;
+    font-size: 10px;
+    box-shadow: inset -1px -1px 0 rgba(0, 0, 0, .08);
+    word-wrap: normal;
+}
+
+/* replace light background for some hljs themes */
+code.github-css,
+code.github-gist-css,
+code.tomorrow-css,
+code.default-css,
+code.googlecode-css,
+code.ascetic-css,
+code.color-brewer-css,
+code.grayscale-css,
+code.idea-css,
+code.vs-css,
+code.xcode-css {
+    background-color: #F9F9F9 !important;
+}
+
+blockquote {
+    padding: 10px;
+    margin-left: 0;
+    color: #666;
+    border: 0 none;
+    border-left: 4px solid #EEE;
+}
+
+blockquote p:last-child,
+blockquote ul:last-child,
+blockquote ol:last-child {
+    margin-bottom: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: #FFF;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #DDD;
+}
+
+table div {
+    page-break-inside: avoid;
+}
+
+th, td {
+    text-align: left;
+}
+
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+    padding: 8px 14px;
+    vertical-align: top;
+    border-top: 1px solid #DDD;
+}
+
+table > caption + thead > tr:first-child > th,
+table > colgroup + thead > tr:first-child > th,
+table > thead:first-child > tr:first-child > th,
+table > caption + thead > tr:first-child > td,
+table > colgroup + thead > tr:first-child > td,
+table > thead:first-child > tr:first-child > td {
+    border-top: 0;
+}
+
+table > tbody + tbody {
+    border-top: 2px solid #DDD;
+}
+
+table table {
+    background-color: #FFF;
+}
+
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+    border: 1px solid #DDD;
+}
+
+table > thead > tr > th,
+table > thead > tr > td {
+    border-bottom-width: 2px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 90%;
+}
+
+table > tbody > tr:nth-of-type(odd) {
+    background-color: #F9F9F9;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: inherit;
+    font-weight: normal;
+    line-height: 1.1;
+    color: #111;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding: 0;
+    page-break-after: avoid;
+}
+
+h1, h2 {
+    border-bottom: 1px solid #EEE;
+    padding-bottom: 7px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-size: 22px;
+}
+
+h2 {
+    font-size: 17px;
+}
+
+h3 {
+    font-size: 15px;
+}
+
+h4 {
+    font-size: 11px;
+}
+
+h5, h6 {
+    font-size: 10px;
+    font-weight: bold;
+    color: #666;
+}
+
+p {
+    margin: 0 0 10px;
+}
+
+input[type="checkbox"] {
+    margin-right: 6px;
+    position: relative;
+    bottom: 1px;
+}
+
+ul,
+ol {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+ul li,
+ol li {
+    margin-bottom: 2px;
+}
+
+dl {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+    color: #4078C0;
+}
+
+.new-page,
+.page-break,
+.next-page,
+.page-end {
+    page-break-before: always;
+}
+
+#pageHeader,
+#pageHeader a,
+#pageHeader a:visited {
+    color: #777;
+}
+
+#pageHeader span {
+    vertical-align: middle;
+}
+
+#pageFooter {
+    border-top: 1px solid #EEE;
+    padding-top: 5px;
+    color: #777;
+    font-size: 80%;
+}
+#pageFooter a,
+#pageFooter a:visited {
+    color: #777;
+}
+
+* {
+    overflow: visible !important;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    box-decoration-break: clone;
+}
+
+html, body {
+    background: #FFF;
+    font-family: "Segoe UI", Arial, freesans, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #333;
+    word-wrap: break-word;
+	hyphens: auto;
+}
+
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 4px solid #EEE;
+}
+
+code {
+    padding: .1em .4em;
+    display: inline-block;
+    background-color: #f9f2f4;
+    color: #c7254e;
+    border-radius: 3px;
+    border: 0 none;
+    font: small Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
+    hyphens: manual;
+}
+
+pre code {
+    padding: 15px;
+    display: block;
+    background-color: #F9F9F9;
+    color: #555;
+    font-size: small;
+    box-shadow: inset -1px -1px 0 rgba(0, 0, 0, .08);
+    word-wrap: normal;
+}
+
+/* replace light background for some hljs themes */
+code.github-css,
+code.github-gist-css,
+code.tomorrow-css,
+code.default-css,
+code.googlecode-css,
+code.ascetic-css,
+code.color-brewer-css,
+code.grayscale-css,
+code.idea-css,
+code.vs-css,
+code.xcode-css {
+    background-color: #F9F9F9 !important;
+}
+
+blockquote {
+    padding: 10px;
+    margin-left: 0;
+    color: #666;
+    border: 0 none;
+    border-left: 4px solid #EEE;
+}
+
+blockquote p:last-child,
+blockquote ul:last-child,
+blockquote ol:last-child {
+    margin-bottom: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: #FFF;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #DDD;
+}
+
+table div {
+    page-break-inside: avoid;
+}
+
+th, td {
+    text-align: left;
+}
+
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+    padding: 8px 14px;
+    vertical-align: top;
+    border-top: 1px solid #DDD;
+}
+
+table > caption + thead > tr:first-child > th,
+table > colgroup + thead > tr:first-child > th,
+table > thead:first-child > tr:first-child > th,
+table > caption + thead > tr:first-child > td,
+table > colgroup + thead > tr:first-child > td,
+table > thead:first-child > tr:first-child > td {
+    border-top: 0;
+}
+
+table > tbody + tbody {
+    border-top: 2px solid #DDD;
+}
+
+table table {
+    background-color: #FFF;
+}
+
+table > thead > tr > th,
+table > tbody > tr > th,
+table > tfoot > tr > th,
+table > thead > tr > td,
+table > tbody > tr > td,
+table > tfoot > tr > td {
+    border: 1px solid #DDD;
+    text-align: center;
+}
+
+table > tbody > tr > td:first-child {
+    text-align: left;
+}
+
+table > thead > tr > th,
+table > thead > tr > td {
+    border-bottom-width: 2px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 90%;
+}
+
+table > tbody > tr:nth-of-type(odd) {
+    background-color: #F9F9F9;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: inherit;
+    font-weight: normal;
+    line-height: 1.1;
+    color: #111;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding: 0;
+    page-break-after: avoid;
+}
+
+h1, h2 {
+    border-bottom: 1px solid #EEE;
+    padding-bottom: 7px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-size: xx-large;
+}
+
+h2 {
+    font-size: x-large;
+}
+
+h3 {
+    font-size: large;
+}
+
+h4 {
+    font-size: medium;
+}
+
+h5, h6 {
+    font-size: small;
+    font-weight: bold;
+    color: #666;
+}
+
+p {
+    margin: 0 0 10px;
+}
+
+input[type="checkbox"] {
+    margin-right: 6px;
+    position: relative;
+    bottom: 1px;
+}
+
+ul,
+ol {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+ul li,
+ol li {
+    margin-bottom: 2px;
+}
+
+dl {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+    color: #4078C0;
+}
+
+.new-page,
+.page-break,
+.next-page,
+.page-end {
+    page-break-before: always;
+}
+
+#pageHeader,
+#pageHeader a,
+#pageHeader a:visited {
+    color: #777;
+}
+
+#pageHeader span {
+    vertical-align: middle;
+}
+
+#pageFooter {
+    border-top: 1px solid #EEE;
+    padding-top: 5px;
+    color: #777;
+    font-size: 80%;
+}
+#pageFooter a,
+#pageFooter a:visited {
+    color: #777;
+}
+
+/**
+ * GitHub Gist Theme
+ * Author : Louis Barranqueiro - https://github.com/LouisBarranqueiro
+ */
+
+.hljs {
+  display: block;
+  background: white;
+  padding: 0.5em;
+  color: #333333;
+  overflow-x: auto;
+}
+
+.hljs-comment,
+.hljs-meta {
+  color: #969896;
+}
+
+.hljs-string,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-strong,
+.hljs-emphasis,
+.hljs-quote {
+  color: #df5000;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type {
+  color: #a71d5d;
+}
+
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-attribute {
+  color: #0086b3;
+}
+
+.hljs-section,
+.hljs-name {
+  color: #63a35c;
+}
+
+.hljs-tag {
+  color: #333333;
+}
+
+.hljs-title,
+.hljs-attr,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #795da3;
+}
+
+.hljs-addition {
+  color: #55a532;
+  background-color: #eaffea;
+}
+
+.hljs-deletion {
+  color: #bd2c00;
+  background-color: #ffecec;
+}
+
+.hljs-link {
+  text-decoration: underline;
+}
+
+pre { white-space: pre-wrap !important; word-break: break-word !important; overflow: hidden !important;}
+</style>
+</head>
+<body>
+<div id="pageContent">
+<h1 id="capstone-project">Capstone Project</h1>
+<h2 id="machine-learning-engineer-nanodegree">Machine Learning Engineer Nanodegree</h2>
+<p>Terence So<br>
+October 02, 2016
+<br>
+<br></p>
+<h2 id="i-definition">I. Definition</h2>
+<h3 id="project-overview">Project Overview</h3>
+<p>This project is a simulation of a <a href="https://en.wikipedia.org/wiki/Micromouse">Micromouse</a> competition. A robot mouse is tasked with plotting a path from a corner of the maze to its center. The robot mouse may make multiple runs in a given maze. In the first run, the robot mouse tries to map out the maze to not only find the center, but also figure out the best paths to the center. In the subsequent run, the robot mouse attempts to reach the center in the fastest time possible using what it has previously learned. This <a href="https://www.youtube.com/watch?v=0JCsRpcrk3s">video</a> is an example of a Micromouse competition.</p>
+<h3 id="problem-statement">Problem Statement</h3>
+<h4 id="game-mechanics">Game Mechanics</h4>
+<p>The robot is given two(2) runs. It begins on the lower left corner (0,0) facing north and attempts to reach the goal room in the center of the maze. In both runs, it is required to reach the goal within 1000 turns/time steps. However, the first run is considered an &quot;exploration run&quot; and the robot is allowed to further explore the maze after it reaches the goal. The robot is scored based on the number of turns it takes during each run. In the exploration run, each turn is worth 1/30 points. In the second run, it is worth a full(1) point. A lower score is better.</p>
+<h4 id="the-challenge">The Challenge</h4>
+<p>The objective of this project is to minimize turns taken by the robot to navigate from start to goal. In the ideal case, the robot should always take the shortest path and use optimal moves every run. However, the robot has no prior knowledge of the maze and the shortest path is unknown. Therefore, our task is threefold:</p>
+<ol>
+<li>Reveal enough of the maze to determine the shortest path from start to goal.</li>
+<li>Navigate the robot using the shortest path.</li>
+<li>Use the minimal number of turns while doing (1) and (2).</li>
+</ol>
+<h3 id="metrics">Metrics</h3>
+<p>In this project, our main performance metric is already provided – a score which is a total of 1/30th of the turns taken in the first run and the number of turns taken in the second.</p>
+<p>We shall also be using supplementary metrics to further evaluate our robot's performance – the number of steps of the chosen path and the number of turns used. Note the difference between a step and a turn: a move from one cell to an adjacent cell is considered one step; a turn can consist of a maximum of 3 steps.</p>
+<div style="page-break-after: always;"></div>
+<h2 id="ii-analysis">II. Analysis</h2>
+<h3 id="data-exploration-and-visualization">Data Exploration and Visualization</h3>
+<h4 id="the-robot">The Robot</h4>
+<p>The robot has sensors on the front, left and right. Each turn, each sensor returns the distance to the wall it is facing. The sensors are accurate and contain no noise.</p>
+<p>Each turn the robot is allowed to turn left or right but not a full u-turn. It is also allowed to move forward, left, right or reverse up to a maximum of 3 steps from its current position. All turns and moves are exact and contain no noise.</p>
+<p>Naturally, the robot cannot move through walls. If it attempts to do so, it will remain in the last valid position no feedback is provided to the robot.</p>
+<h4 id="the-mazes">The Mazes</h4>
+<h5 id="maze-characteristics">Maze Characteristics</h5>
+<p>There are three(3) test mazes provided. Each maze is an NxN grid where N is even from 12 to 16. Each maze's outer perimeter is completely bounded. The goal room is always a 2x2 grid in the center of the maze. There is always at least one(1) path from the starting location to the goal room. It is also worth noting that there is always a right wall at the starting location and the robot has no choice but to move forward during its first turn.</p>
+<h5 id="data-representation">Data Representation</h5>
+<p>Each test maze is stored in a separate text file:</p>
+<ul>
+<li><a href="test_maze_01.txt">test_maze_01.txt</a></li>
+<li><a href="test_maze_01.txt">test_maze_02.txt</a></li>
+<li><a href="test_maze_01.txt">test_maze_03.txt</a></li>
+</ul>
+<p>The first line of each file describes the maze dimensions. The next lines are comma delimited numbers that describe a column of the maze. Each number is a 4-bit representation of a cell's walls. Each bit represents the presence of a cell wall: 0 if closed and 1 if open. This is best illustrated in figure below:</p>
+<p><img src="cell_walls.png" alt=""></p>
+<p>It is important to note that the outer perimeter of the maze must be walled. In addition, adjacent cells need to be consistent. For example, if a cell's top side is closed, then the cell above it must have its bottom side closed as well. A portion of a maze is illustrated below:</p>
+<p><img src="maze_example.png" alt=""></p>
+<h5 id="maze-visualizations">Maze Visualizations</h5>
+<p>The following are diagrams of the test mazes. The shortest path is traced in each maze. There are actually multiple shortest paths with equal length, only one is shown for clarity.</p>
+<h6 id="test-maze-01">Test Maze 01</h6>
+<p>Size: 12x12<br>Shortest Path Length: 30</p>
+<p><img src="test_maze_01.png" alt=""></p>
+<div style="page-break-after: always;"></div>
+<h6 id="test-maze-02">Test Maze 02</h6>
+<p>Size: 14x14<br>Shortest Path Length: 43</p>
+<p><img src="test_maze_02.png" alt=""></p>
+<h6 id="test-maze-03">Test Maze 03</h6>
+<p>Size: 16x16<br>Shortest Path Length: 49</p>
+<p><img src="test_maze_03.png" alt=""></p>
+<h3 id="algorithms-and-techniques">Algorithms and Techniques</h3>
+<h4 id="finding-the-goal-room">Finding the Goal Room</h4>
+<p>It is apparent from our data analysis that once we have the full map of the maze, it is relatively straightforward to find a path to the goal. In fact, we can do it manually by inspection and some trial and error. Algorithmically, there are several ways to do <a href="https://en.wikipedia.org/wiki/Pathfinding">path finding</a>: Dijkstra's, Sample and A* search. All these algorithms achieve the same thing and are actually not very different procedurally. All these algorithms explore a tree-like structure, visiting each node until the shortest path is found.  The main difference is efficiency. In this sense, A* tends to do better since it uses a heuristic to explore nodes that are closer to the goal first. For this project, we shall use A*. This solves the first half of our problem.</p>
+<p>The other half is that we do not have a map of the maze at the start of the first run. The good news is that we can build this map piecemeal from the data coming in from the robot sensors. We can first assume a maze that has no walls save for its outer perimeter and place walls as we detect them. Combining this with A*, we find that it solves our problem rather neatly.</p>
+<p>We can imagine the behavior of our robot with A* when first placed in the starting location. The maze will start out void of walls, its first route will be to simply head straight north and then right towards the goal. However, things don't go according to plan. Every turn, its sensors will pick up new walls and obstacles along its route. The robot will have to come up with a new route each time the map is updated. Eventually though, it will find an opening that will take it to the goal room. The nice thing about A* is that robot will always try to move towards the center.</p>
+<h4 id="a-search-algorithm">A*\ Search Algorithm</h4>
+<p>A brief discussion on the <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">A* Search Algorithm</a> is given here for completeness. The first part of A* is determining the cost of each position in the maze relative to the starting position. The maze can be thought of as a directed graph with the root node being the robot starting position and reachable adjacent cells as child nodes. Starting from the root node, we expand into adjacent nodes adding the cost of one step to each node. We do this recursively, expanding nodes with lower cost first until we reach the goal. Since we always favor expanding nodes with lower cost, we are ensured that we have the lowest possible path cost when we reach the goal.</p>
+<p>As mentioned, the main difference of A* is the use of a heuristic to determine which nodes to expand first. When prioritizing nodes to expand, instead of only using the cost of the path to a node it will add a heuristic cost (an estimate of the cost of the cheapest path from the node to the goal). This has the potential to minimize the number of iterations if the goal is reached earlier. In this case, our heuristic is simply the Euclidean distance of a position to the goal.</p>
+<p>A completed cost map for Test Maze 01 looks like the following:</p>
+<pre><code class="hljs github-gist-css python">[[ <span class="hljs-number">0</span>  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>  <span class="hljs-number">4</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">9</span> <span class="hljs-number">10</span> <span class="hljs-number">11</span>]
+ [ <span class="hljs-number">5</span>  <span class="hljs-number">4</span>  <span class="hljs-number">3</span>  <span class="hljs-number">8</span>  <span class="hljs-number">9</span>  <span class="hljs-number">8</span>  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">9</span> <span class="hljs-number">10</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span>]
+ [ <span class="hljs-number">6</span>  <span class="hljs-number">7</span>  <span class="hljs-number">4</span>  <span class="hljs-number">7</span> <span class="hljs-number">10</span>  <span class="hljs-number">9</span>  <span class="hljs-number">8</span>  <span class="hljs-number">9</span> <span class="hljs-number">14</span> <span class="hljs-number">13</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span>]
+ [ <span class="hljs-number">7</span>  <span class="hljs-number">6</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span> <span class="hljs-number">11</span> <span class="hljs-number">10</span> <span class="hljs-number">11</span> <span class="hljs-number">10</span> <span class="hljs-number">15</span> <span class="hljs-number">16</span> <span class="hljs-number">17</span> <span class="hljs-number">18</span>]
+ [ <span class="hljs-number">8</span>  <span class="hljs-number">9</span> <span class="hljs-number">10</span> <span class="hljs-number">13</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span> <span class="hljs-number">14</span> <span class="hljs-number">15</span> <span class="hljs-number">16</span> <span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span>]
+ [<span class="hljs-number">13</span> <span class="hljs-number">12</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span> <span class="hljs-number">16</span> <span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span>]
+ [<span class="hljs-number">14</span> <span class="hljs-number">13</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span> <span class="hljs-number">14</span> <span class="hljs-number">-1</span> <span class="hljs-number">30</span> <span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">21</span>]
+ [<span class="hljs-number">15</span> <span class="hljs-number">14</span> <span class="hljs-number">15</span> <span class="hljs-number">14</span> <span class="hljs-number">27</span> <span class="hljs-number">28</span> <span class="hljs-number">29</span> <span class="hljs-number">28</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">23</span> <span class="hljs-number">22</span>]
+ [<span class="hljs-number">16</span> <span class="hljs-number">17</span> <span class="hljs-number">26</span> <span class="hljs-number">25</span> <span class="hljs-number">26</span> <span class="hljs-number">27</span> <span class="hljs-number">28</span> <span class="hljs-number">27</span> <span class="hljs-number">26</span> <span class="hljs-number">21</span> <span class="hljs-number">22</span> <span class="hljs-number">23</span>]
+ [<span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">24</span> <span class="hljs-number">27</span> <span class="hljs-number">28</span> <span class="hljs-number">27</span> <span class="hljs-number">26</span> <span class="hljs-number">25</span> <span class="hljs-number">24</span> <span class="hljs-number">23</span> <span class="hljs-number">24</span>]
+ [<span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">23</span> <span class="hljs-number">24</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span> <span class="hljs-number">26</span> <span class="hljs-number">25</span> <span class="hljs-number">24</span> <span class="hljs-number">25</span>]
+ [<span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">21</span> <span class="hljs-number">22</span> <span class="hljs-number">23</span> <span class="hljs-number">24</span> <span class="hljs-number">25</span> <span class="hljs-number">26</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span> <span class="hljs-number">-1</span>]]
+</code></pre>
+<p>The second part of A* begins when the algorithm reaches the goal position. From the goal positioni, we trace a path back to the starting position by based on the completed cost map. In the above example, we begin at the center with value 30 to 29 to 28 and so forth. Note that there are multiple paths and any of these paths will be equal in length.</p>
+<h4 id="finding-the-shortest-path">Finding the Shortest Path</h4>
+<p>Now that we can find our way to the goal room, our next concern is to do it in the shortest time possible. We recall that our robot plans optimistically and we can make this work in our favor. When the robot first reaches the goal, the path it took to get there is likely not the shortest. However, the robot will have revealed walls and updated its map accordingly. If we make the robot run back to the start location it will mostly likely choose a different path back – one that runs through unexplored areas of the map since it thinks it will have fewer obstacles that way. By making the robot take multiple trips from the starting location to the goal room, more and more of the map will be revealed as long as the robot thinks that there are possible shorter routes worth exploring. Eventually, the robot will settle on the same route - <em>this</em> is our shortest path.</p>
+<p>Here is the robot trying another path after reaching the goal:</p>
+<p><img src="shortest_path.png" alt=""></p>
+<h4 id="robot-movement">Robot Movement</h4>
+<p>It is important to mention that running into a wall is an extremely undesirable case. While feedback is provided to the UI, it is not provided to the robot. The robot is only given the starting position and sensor information. There is no other way to determine its position in the maze aside from tracking its own moves. If the robot hits a wall, it will fail to localize from then on. Assuming that our charting is accurate and we never instruct the robot to go past obstacles, this should never happen.</p>
+<p>There is also the matter of maximizing the use of turns in each time step. The robot can move a maximum of three(3) steps in one direction each turn. We can take advantage of this if our A* route  has three(3) or more consecutive steps in the same direction. For example, a route: <code>[North, North, North, East, East]</code> can be compressed into 2 turns by going north - move 3, east - move 2.</p>
+<div style="page-break-after: always;"></div>
+<h3 id="benchmark">Benchmark</h3>
+<p>In the ideal case, the robot takes the shortest path using max three(3) steps per turn in both runs. The scores in this case are as follows:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">Maze 01</th>
+<th style="text-align:center">Maze 02</th>
+<th style="text-align:center">Maze 03</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Size</td>
+<td style="text-align:center">12x12</td>
+<td style="text-align:center">14x14</td>
+<td style="text-align:center">16x16</td>
+</tr>
+<tr>
+<td>Path Length</td>
+<td style="text-align:center">30</td>
+<td style="text-align:center">43</td>
+<td style="text-align:center">49</td>
+</tr>
+<tr>
+<td>Turns</td>
+<td style="text-align:center">17</td>
+<td style="text-align:center">28</td>
+<td style="text-align:center">29</td>
+</tr>
+<tr>
+<td>Score</td>
+<td style="text-align:center">17.567</td>
+<td style="text-align:center">28.934</td>
+<td style="text-align:center">29.967</td>
+</tr>
+</tbody>
+</table>
+<p>While it is unrealistic to expect that we can achieve these scores, it is reasonable to expect to at least be able to find the shortest path. Additionally, the robot should be able to maximize movement and use the minimum amount of turns following the said path. This shall be our minimum baseline performance.</p>
+<h2 id="iii-methodology">III. Methodology</h2>
+<h3 id="data-preprocessing">Data Preprocessing</h3>
+<p>No data preprocessing is necessary in this project. All input map data and sensor data is valid and accurate.</p>
+<h3 id="implementation">Implementation</h3>
+<h4 id="conventions">Conventions</h4>
+<p>In an effort to standardize the representation of heading and orientation, the following table displays the conventions used in this implementation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Heading</th>
+<th style="text-align:center">Index</th>
+<th style="text-align:center">Angle</th>
+<th style="text-align:center">Delta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">N</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">[ 0,  1]</td>
+</tr>
+<tr>
+<td style="text-align:center">E</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">[ 1,  0]</td>
+</tr>
+<tr>
+<td style="text-align:center">S</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">180</td>
+<td style="text-align:center">[ 0, -1]</td>
+</tr>
+<tr>
+<td style="text-align:center">W</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">270</td>
+<td style="text-align:center">[-1,  0]</td>
+</tr>
+</tbody>
+</table>
+<p>This is implemented in code with an array named delta:</p>
+<pre><code class="hljs github-gist-css python">delta = [[ <span class="hljs-number">0</span>,  <span class="hljs-number">1</span>], <span class="hljs-comment"># up</span>
+         [ <span class="hljs-number">1</span>,  <span class="hljs-number">0</span>], <span class="hljs-comment"># right</span>
+         [ <span class="hljs-number">0</span>, <span class="hljs-number">-1</span>], <span class="hljs-comment"># down</span>
+         [<span class="hljs-number">-1</span>,  <span class="hljs-number">0</span>]] <span class="hljs-comment"># left</span>
+</code></pre>
+<h4 id="maze-class">Maze Class</h4>
+<p>The Maze class is an encapsulation of the structure of a maze. Internally, it is backed using a 2-D numpy int array. Each element in the array represents a cell. The first dimension is the horizontal x-axis. The second dimension represents the vertical y-axis. The 4-bits of each element indicates whether a wall exists on each side of the cell. If a wall exists, the bit is 0. Otherwise, it is 1. This representation is consistent with the provided test mazes (see Analysis section for details). A numpy array loaded with Test Maze 01 looks like the following figure.</p>
+<pre><code class="hljs github-gist-css python">[[ <span class="hljs-number">1</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>]
+ [ <span class="hljs-number">3</span>  <span class="hljs-number">5</span> <span class="hljs-number">14</span>  <span class="hljs-number">3</span>  <span class="hljs-number">7</span>  <span class="hljs-number">5</span> <span class="hljs-number">15</span>  <span class="hljs-number">4</span>  <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span> <span class="hljs-number">12</span>]
+ [<span class="hljs-number">11</span>  <span class="hljs-number">6</span> <span class="hljs-number">10</span> <span class="hljs-number">10</span>  <span class="hljs-number">9</span>  <span class="hljs-number">7</span> <span class="hljs-number">13</span>  <span class="hljs-number">6</span>  <span class="hljs-number">3</span>  <span class="hljs-number">5</span> <span class="hljs-number">13</span>  <span class="hljs-number">4</span>]
+ [<span class="hljs-number">10</span>  <span class="hljs-number">9</span> <span class="hljs-number">13</span> <span class="hljs-number">12</span>  <span class="hljs-number">3</span> <span class="hljs-number">13</span>  <span class="hljs-number">5</span> <span class="hljs-number">12</span>  <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span>  <span class="hljs-number">6</span>]
+ [ <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>  <span class="hljs-number">3</span> <span class="hljs-number">15</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span>  <span class="hljs-number">7</span>  <span class="hljs-number">7</span>  <span class="hljs-number">4</span> <span class="hljs-number">10</span> <span class="hljs-number">10</span>]
+ [ <span class="hljs-number">3</span>  <span class="hljs-number">5</span> <span class="hljs-number">15</span> <span class="hljs-number">14</span> <span class="hljs-number">10</span>  <span class="hljs-number">3</span>  <span class="hljs-number">6</span> <span class="hljs-number">10</span> <span class="hljs-number">11</span>  <span class="hljs-number">6</span> <span class="hljs-number">10</span> <span class="hljs-number">10</span>]
+ [ <span class="hljs-number">9</span>  <span class="hljs-number">7</span> <span class="hljs-number">12</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span>  <span class="hljs-number">9</span> <span class="hljs-number">14</span>  <span class="hljs-number">9</span> <span class="hljs-number">14</span> <span class="hljs-number">11</span> <span class="hljs-number">13</span> <span class="hljs-number">14</span>]
+ [ <span class="hljs-number">3</span> <span class="hljs-number">13</span>  <span class="hljs-number">5</span> <span class="hljs-number">12</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span> <span class="hljs-number">13</span>  <span class="hljs-number">6</span>  <span class="hljs-number">9</span> <span class="hljs-number">14</span>  <span class="hljs-number">3</span> <span class="hljs-number">14</span>]
+ [<span class="hljs-number">11</span>  <span class="hljs-number">4</span>  <span class="hljs-number">1</span>  <span class="hljs-number">7</span> <span class="hljs-number">15</span> <span class="hljs-number">13</span>  <span class="hljs-number">7</span> <span class="hljs-number">13</span>  <span class="hljs-number">6</span>  <span class="hljs-number">9</span> <span class="hljs-number">14</span> <span class="hljs-number">10</span>]
+ [<span class="hljs-number">11</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span> <span class="hljs-number">10</span>  <span class="hljs-number">9</span>  <span class="hljs-number">7</span> <span class="hljs-number">13</span>  <span class="hljs-number">5</span> <span class="hljs-number">15</span>  <span class="hljs-number">7</span> <span class="hljs-number">14</span>  <span class="hljs-number">8</span>]
+ [<span class="hljs-number">11</span>  <span class="hljs-number">5</span> <span class="hljs-number">12</span> <span class="hljs-number">10</span>  <span class="hljs-number">2</span>  <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span> <span class="hljs-number">10</span>  <span class="hljs-number">8</span>  <span class="hljs-number">9</span>  <span class="hljs-number">6</span>]
+ [ <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span> <span class="hljs-number">13</span> <span class="hljs-number">13</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span> <span class="hljs-number">12</span>  <span class="hljs-number">9</span>  <span class="hljs-number">5</span>  <span class="hljs-number">5</span> <span class="hljs-number">12</span>]]
+</code></pre>
+<p>This class is generally used to determine whether a location is within the maze <code>bounds()</code>, determining whether a particular side of a cell is <code>passable()</code>, and used to <code>block_cell()</code> sides.</p>
+<div style="page-break-after: always;"></div>
+<h4 id="astarplanner-class">AStarPlanner Class</h4>
+<p>This class is an implementation the <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">A* search algorithm</a>. It uses a euclidean distance to the center of the maze as a <code>heuristic()</code>. Using a maze, start and goal locations, the function <code>plan()</code> runs A* and returns a route.</p>
+<pre><code class="hljs github-gist-css python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">plan</span><span class="hljs-params">(self)</span>:</span>
+    <span class="hljs-string">'''
+    Do A* search. Return an optimal route.
+    '''</span>
+    x, y = self.start
+    opened = [(self.heuristic(x, y), <span class="hljs-number">0</span>, x, y)]
+    closed = np.full(self.map.shape(), <span class="hljs-number">-1</span>, dtype=np.int)
+    closed[x][y] = <span class="hljs-number">0</span>
+    route = <span class="hljs-keyword">None</span>
+    <span class="hljs-keyword">while</span> len(opened) &gt; <span class="hljs-number">0</span>:
+        opened.sort()
+        f, g, x, y  = opened.pop(<span class="hljs-number">0</span>)
+        <span class="hljs-keyword">if</span> (x, y) <span class="hljs-keyword">in</span> self.goal:
+            <span class="hljs-comment"># We've found the goal. Backtrace a route to the starting location</span>
+            route = []
+            step = closed[x][y]
+            i = <span class="hljs-number">0</span>
+            <span class="hljs-keyword">while</span> step != <span class="hljs-number">0</span>:
+                <span class="hljs-keyword">while</span> <span class="hljs-keyword">True</span>:
+                    x2 = x - delta[i][<span class="hljs-number">0</span>]
+                    y2 = y - delta[i][<span class="hljs-number">1</span>]
+                    <span class="hljs-keyword">if</span> self.map.passable(x2, y2, i) <span class="hljs-keyword">and</span> closed[x2][y2] == step<span class="hljs-number">-1</span>:
+                        <span class="hljs-comment"># check if our planner went through this cell and if it was the previous step</span>
+                        route.append(i)
+                        step -= <span class="hljs-number">1</span>
+                        x = x2
+                        y = y2
+                        <span class="hljs-keyword">break</span>
+                    <span class="hljs-keyword">else</span>:
+                        i = (i + <span class="hljs-number">1</span>) % <span class="hljs-number">4</span>
+            route.reverse()
+            <span class="hljs-keyword">break</span>
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(delta)):
+                x2 = x + delta[i][<span class="hljs-number">0</span>]
+                y2 = y + delta[i][<span class="hljs-number">1</span>]
+                <span class="hljs-keyword">if</span> self.map.passable(x, y, i) <span class="hljs-keyword">and</span> closed[x2][y2] &lt; <span class="hljs-number">0</span>:
+                    <span class="hljs-comment"># passable and we haven't covered this location before</span>
+                    g2 = g + self.cost
+                    f2 = g2 + self.heuristic(x2, y2)
+                    opened.append([f2, g2, x2, y2])
+                    closed[x2][y2] = g2
+    <span class="hljs-comment"># print closed</span>
+    self.closed = closed
+    <span class="hljs-keyword">return</span> route
+</code></pre>
+<p>The route is an array of steps to reach the goal. Each element is one of four(4) directions: N, S, E and W as per our convention. The route for Test Maze 01 is as follows.</p>
+<pre><code class="hljs github-gist-css python">[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>]
+</code></pre>
+<div style="page-break-after: always;"></div>
+<h4 id="robot-class">Robot Class</h4>
+<p>This class is the meat of our implementation. It uses the maze and planner classes to determine the correct move at each time step. Moreover, it controls meta-planning - setting start and goal locations during exploration and when to reset for the test run.</p>
+<p>The section of the code that turns the route into rotation and movement at each time step is worth discussing:</p>
+<pre><code class="hljs github-gist-css python"><span class="hljs-comment"># turn right by default when a u-turn is needed</span>
+rotations = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">-1</span>]
+movements = [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>,  <span class="hljs-number">1</span>]
+h = (self.route[self.route_i] - self.heading + <span class="hljs-number">4</span>) % <span class="hljs-number">4</span>
+rotation = rotations[h]
+movement = movements[h]
+<span class="hljs-keyword">if</span> movement &gt; <span class="hljs-number">0</span>:
+    self.route_i += <span class="hljs-number">1</span>
+    <span class="hljs-comment"># maximize movement</span>
+    <span class="hljs-keyword">while</span> self.route_i &lt; len(self.route) <span class="hljs-keyword">and</span> \
+        self.route[self.route_i] == self.route[self.route_i<span class="hljs-number">-1</span>] <span class="hljs-keyword">and</span> \
+        movement &lt; <span class="hljs-number">3</span>:
+            self.route_i += <span class="hljs-number">1</span>
+            movement += <span class="hljs-number">1</span>
+self.move(rotation, movement)
+rotation *= <span class="hljs-number">90</span>
+self.steps += movement
+</code></pre>
+<p>The first part of this code snippet determines the appropriate rotation and movement for the given step in the route plus the robot's current heading. Note that we never make the robot go in reverse. Going in reverse is risky business, as we are never really sure that our map is already complete, and running into a wall will completely tilt our localization. There is likely a way to handle this elegantly, but u-turns are rare and only happen during exploration (since we already have an optimal route when we go into the test run, and optimal routes have no u-turns). At best we shave a point off the final score, but it hardly seems worth the extra code.</p>
+<p>The next part of the snippet maximizes the turn, allowing the robot to move up to a maximum of three steps. It checks the route for consecutive moves in the same direction.</p>
+<h4 id="visualizer-class">Visualizer Class</h4>
+<p>Implemented using the turtle library, the Visualizer is a straightforward class for drawing the maze, path and robot to the screen. The following is a screenshot of the visualizer in action.</p>
+<p><img src="visualizer.png" alt=""></p>
+<div style="page-break-after: always;"></div>
+<h3 id="refinement">Refinement</h3>
+<p>Our robot implementation is actually an optimistic reinforcement learning algorithm. The exploration run is the robot's training phase. During this phase, we make the robot take multiple back and forth trips from the start and goal locations. The following is code snippet from the Robot's <code>next_move()</code> function that implements this.</p>
+<pre><code class="hljs github-gist-css python">reset = <span class="hljs-keyword">False</span>
+<span class="hljs-comment"># update map based on sensors</span>
+<span class="hljs-comment"># update plan if necessary</span>
+<span class="hljs-keyword">if</span> self.update_map(sensors): <span class="hljs-comment"># returns true if map changed</span>
+    self.update_plan()
+
+<span class="hljs-keyword">if</span> self.route == <span class="hljs-keyword">None</span>:
+    <span class="hljs-comment"># No route to goal</span>
+    <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">'No route to goal!'</span>)
+<span class="hljs-keyword">elif</span> self.route_i &lt; len(self.route):
+    <span class="hljs-comment"># We are still en route</span>
+    <span class="hljs-keyword">pass</span>
+<span class="hljs-keyword">else</span>:
+    <span class="hljs-comment"># We've reached the goal</span>
+    <span class="hljs-keyword">if</span> self.steps &lt;= self.steps_expected:
+        <span class="hljs-comment"># Bot is ready for the actual run</span>
+        self.reset()
+        reset = <span class="hljs-keyword">True</span>
+        self.practice = <span class="hljs-keyword">False</span>
+        self.flipflop = <span class="hljs-keyword">True</span>
+    <span class="hljs-comment"># Flip flop between the start location and goal until bot is already</span>
+    <span class="hljs-comment"># taking the optimal path from start -&gt; goal</span>
+    <span class="hljs-keyword">elif</span> self.flipflop:
+        <span class="hljs-comment"># make it run back to the start location</span>
+        self.planner = AStarPlanner(self.maze, self.loc, [(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)])
+        self.flipflop = <span class="hljs-keyword">not</span> self.flipflop
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># make it do one more trip to the goal</span>
+        self.planner = AStarPlanner(self.maze, self.loc)
+        self.flipflop = <span class="hljs-keyword">not</span> self.flipflop
+    self.update_plan()
+    self.steps_expected = len(self.route)
+</code></pre>
+<p>Every trip the robot takes (start to goal or vice versa), the robot plots a course that seems shortest and records its expected number of steps to get to the goal. If the number of steps used exceed the expectation, it means obstacles were encountered and the robot was forced to reroute. If it does not, it means it has found the shortest path and the robot ceases the exploration run. No hyper-parameters are necessary.</p>
+<div style="page-break-after: always;"></div>
+<h2 id="iv-results">IV. Results</h2>
+<h3 id="model-evaluation-and-validation">Model Evaluation and Validation</h3>
+<p>The following detailed statistics were gathered from each trip of the robot.</p>
+<h4 id="test-maze-01-2">Test Maze 01</h4>
+<table>
+<thead>
+<tr>
+<th>Trip</th>
+<th style="text-align:right">01</th>
+<th style="text-align:right">02</th>
+<th style="text-align:right">03</th>
+<th style="text-align:right">04</th>
+<th style="text-align:right">05</th>
+<th style="text-align:right">Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps Expected</td>
+<td style="text-align:right">-</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">26</td>
+<td style="text-align:right">28</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">30</td>
+</tr>
+<tr>
+<td>Steps Used</td>
+<td style="text-align:right">44</td>
+<td style="text-align:right">44</td>
+<td style="text-align:right">32</td>
+<td style="text-align:right">32</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">30</td>
+</tr>
+<tr>
+<td>Turns Used</td>
+<td style="text-align:right">40</td>
+<td style="text-align:right">44</td>
+<td style="text-align:right">24</td>
+<td style="text-align:right">23</td>
+<td style="text-align:right">17</td>
+<td style="text-align:right">17</td>
+</tr>
+</tbody>
+</table>
+<h4 id="test-maze-02-2">Test Maze 02</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Trip</th>
+<th style="text-align:right">01</th>
+<th style="text-align:right">02</th>
+<th style="text-align:right">03</th>
+<th style="text-align:right">04</th>
+<th style="text-align:right">05</th>
+<th style="text-align:right">Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Steps Expected</td>
+<td style="text-align:right">-</td>
+<td style="text-align:right">23</td>
+<td style="text-align:right">35</td>
+<td style="text-align:right">41</td>
+<td style="text-align:right">43</td>
+<td style="text-align:right">43</td>
+</tr>
+<tr>
+<td style="text-align:left">Steps Used</td>
+<td style="text-align:right">81</td>
+<td style="text-align:right">53</td>
+<td style="text-align:right">51</td>
+<td style="text-align:right">45</td>
+<td style="text-align:right">43</td>
+<td style="text-align:right">43</td>
+</tr>
+<tr>
+<td style="text-align:left">Turns Used</td>
+<td style="text-align:right">78</td>
+<td style="text-align:right">46</td>
+<td style="text-align:right">37</td>
+<td style="text-align:right">28</td>
+<td style="text-align:right">27</td>
+<td style="text-align:right">27</td>
+</tr>
+</tbody>
+</table>
+<h4 id="test-maze-03-2">Test Maze 03</h4>
+<table>
+<thead>
+<tr>
+<th>Trip</th>
+<th style="text-align:right">01</th>
+<th style="text-align:right">02</th>
+<th style="text-align:right">03</th>
+<th style="text-align:right">04</th>
+<th style="text-align:right">05</th>
+<th style="text-align:right">Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps Expected</td>
+<td style="text-align:right">-</td>
+<td style="text-align:right">21</td>
+<td style="text-align:right">45</td>
+<td style="text-align:right">47</td>
+<td style="text-align:right">49</td>
+<td style="text-align:right">49</td>
+</tr>
+<tr>
+<td>Steps Used</td>
+<td style="text-align:right">91</td>
+<td style="text-align:right">77</td>
+<td style="text-align:right">63</td>
+<td style="text-align:right">51</td>
+<td style="text-align:right">49</td>
+<td style="text-align:right">49</td>
+</tr>
+<tr>
+<td>Turns Used</td>
+<td style="text-align:right">76</td>
+<td style="text-align:right">63</td>
+<td style="text-align:right">39</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">29</td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<h4 id="results-summary">Results Summary</h4>
+<table>
+<thead>
+<tr>
+<th>Maze</th>
+<th style="text-align:right">01</th>
+<th style="text-align:right">02</th>
+<th style="text-align:right">03</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Train Trips</td>
+<td style="text-align:right">5</td>
+<td style="text-align:right">5</td>
+<td style="text-align:right">5</td>
+</tr>
+<tr>
+<td>Train Turns</td>
+<td style="text-align:right">153</td>
+<td style="text-align:right">221</td>
+<td style="text-align:right">243</td>
+</tr>
+<tr>
+<td>Test Path Length</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">43</td>
+<td style="text-align:right">49</td>
+</tr>
+<tr>
+<td>Test Turns</td>
+<td style="text-align:right">17</td>
+<td style="text-align:right">27</td>
+<td style="text-align:right">29</td>
+</tr>
+<tr>
+<td>Score</td>
+<td style="text-align:right">22.100</td>
+<td style="text-align:right">34.367</td>
+<td style="text-align:right">37.100</td>
+</tr>
+</tbody>
+</table>
+<p>The results are good. In every run, the robot successfully finds the goal room. In addition, the robot successfully determines the shortest path on the 5th training trip. Another observation is that steps expected gets progressively worse every trip while steps used gets progressively better. This is a sign that the robot is adjusting its expectations based on new data.</p>
+<h3 id="justification">Justification</h3>
+<p>The following table shows our results against our benchmarks.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Maze</strong></th>
+<th style="text-align:right"><strong>01</strong></th>
+<th style="text-align:right"><strong>01</strong></th>
+<th style="text-align:right"><strong>02</strong></th>
+<th style="text-align:right"><strong>02</strong></th>
+<th style="text-align:right"><strong>03</strong></th>
+<th style="text-align:right"><strong>03</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td style="text-align:right"><strong>Actual</strong></td>
+<td style="text-align:right"><strong>Benchmark</strong></td>
+<td style="text-align:right"><strong>Actual</strong></td>
+<td style="text-align:right"><strong>Benchmark</strong></td>
+<td style="text-align:right"><strong>Actual</strong></td>
+<td style="text-align:right"><strong>Benchmark</strong></td>
+</tr>
+<tr>
+<td>Path Length</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">30</td>
+<td style="text-align:right">43</td>
+<td style="text-align:right">43</td>
+<td style="text-align:right">49</td>
+<td style="text-align:right">49</td>
+</tr>
+<tr>
+<td>Train Turns</td>
+<td style="text-align:right">153</td>
+<td style="text-align:right">17</td>
+<td style="text-align:right">221</td>
+<td style="text-align:right">28</td>
+<td style="text-align:right">243</td>
+<td style="text-align:right">29</td>
+</tr>
+<tr>
+<td>Test Turns</td>
+<td style="text-align:right">17</td>
+<td style="text-align:right">17</td>
+<td style="text-align:right">27</td>
+<td style="text-align:right">28</td>
+<td style="text-align:right">29</td>
+<td style="text-align:right">29</td>
+</tr>
+<tr>
+<td>Score</td>
+<td style="text-align:right">22.100</td>
+<td style="text-align:right">17.567</td>
+<td style="text-align:right">34.367</td>
+<td style="text-align:right">28.934</td>
+<td style="text-align:right">37.100</td>
+<td style="text-align:right">29.967</td>
+</tr>
+</tbody>
+</table>
+<p>We see that our results are very close or equal to our ideal benchmark. We also verify that we have achieved our baseline performance which is to find the shortest path and use minimal turns in the test run. There is a difference in score however, and this is caused by the number of turns used to explore the maze in the first run.</p>
+<div style="page-break-after: always;"></div>
+<h2 id="v-conclusion">V. Conclusion</h2>
+<h3 id="free-form-visualization">Free-Form Visualization</h3>
+<p>This is a test maze with a simple solution, but illustrates a certain quirk of our implementation of the A* planner.</p>
+<p><img src="test_maze_free.png" alt=""></p>
+<p>The robot will eventually arrive at the simple solution, but in the training stage it will tend to explore the first 4 columns of dead ends. Illustrated here:</p>
+<p><img src="test_maze_free_train.png" alt=""></p>
+<p>While this isn't a show stopper, a possible solution to minimize exploration in cases like this is to make the planner to prefer routes with fewer turns. This is beneficial in another way - straight routes can be further taken advantage of using multiple steps per turn.</p>
+<div style="page-break-after: always;"></div>
+<h3 id="reflection">Reflection</h3>
+<p>I did this coming fresh from the Artificial Intelligence for Robotics course so I already had general idea of how to get the robot to the goal room. Getting the robot to perform well was another story and I didn't have a solution for that in the onset. I figured the best way to find out was to learn by doing, so I set out building a prototype with a few guidelines:</p>
+<ul>
+<li>build a map from sensor data</li>
+<li>use A* for path finding</li>
+<li>move one step at a time and no reverse</li>
+<li>and most importantly, DON'T hit any walls</li>
+</ul>
+<p>Once I was consistently getting the robot to the goal room and finishing the course without any mishaps, it was time to look at the scores and performance. During one of my tests, I observed something curious - sometimes the robot will do worse on the second run. At this point, the robot was only programmed to get to the goal room, reset, and get to the goal room again. With the help of some visualization, I discovered that the robot was always taking a different path in the second run. It was in fact trying to find a better route all by itself. This was how the back and forth trips from start to goal came to be.</p>
+<p>After some refactoring, the only remaining bit of optimization needed was making the robot take multiple steps per turn. This was easily accomplished by counting route steps that were in the same direction.</p>
+<p>One final thing - there was this perplexing bug where the robot would get stuck moving back and forth between the same two positions, and it took me a while to solve it. At times the planner would produce these 'mirror' routes - the first move from one position would lead to the other position, and vice versa. This can happen if the planner is run every time step. The solution was to only update the route when the map was updated, forcing the robot to 'follow through' with the original route.</p>
+<h3 id="improvement">Improvement</h3>
+<p>Thinking within the confines of this simulation, the first change I would make is slap a fourth sensor facing the back of the robot. This would allow us to go in reverse without a lot more code and shave off some more points during exploration. Secondly, an improvement that has been mentioned in an earlier section, is to make the path planner favor routes with fewer turns. Thirdly, something I considered and experimented on briefly is early stopping. From the results, we can see that the route used in the last training run is the same one used in the test run, so it's actually superfluous. We could stop at the 4th run and save the  points. One way to do this is to add an error margin - say 10%, to the training stop condition. This actually worked lowering a point on Maze 02 and 03, but seems too unreliable to include without testing on more mazes. Finally, there's the possibility of using expected turns to evaluate paths instead of steps.</p>
+<p>If we were to work with an actual robotic mouse, adapting our implementation would depend on how reliable the hardware is. Micromouse competitions are very specific regarding wall and grid specifications. If the motor controller can guarantee movement accuracy and if a lower layer filter can give us clean sensor data, then we can pretty much use the same code for high level path planning. Basically, we abstract away the non-idealities. If that is not possible, then we may have to expand the grid size and consider that the robot and walls can occupy several cells. Collision detection will be a bit different, but A* can still work in this case, albeit with a larger grid.</p>
+
+</div></body>
+</html>
